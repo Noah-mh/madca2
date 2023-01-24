@@ -1,23 +1,22 @@
-import React from 'react';
-import { Text } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import React from "react";
+import { Text } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
 
 import {
   Ionicons,
   MaterialCommunityIcons,
   FontAwesome,
-} from '@expo/vector-icons';
+} from "@expo/vector-icons";
 
-import BottomBarNavigator from './component/BottomBarNavigator';
-import WelcomeScreen from './component/WelcomeScreen';
-import SignInScreen from './component/SignIn';
-import RegisterScreen1 from './component/register1';
-import RegisterScreen2 from './component/register2';
-import AddScreen from './component/AddItem';
-import SettingScreen from './component/Setting';
+import BottomBarNavigator from "./component/BottomBarNavigator";
+import WelcomeScreen from "./component/WelcomeScreen";
+import SignInScreen from "./component/SignIn";
+import RegisterScreen1 from "./component/register1";
+import RegisterScreen2 from "./component/register2";
 
-import Budget from './component/Budget'
+import SettingScreen from "./component/Setting";
+import EditProfile from "./component/setting/editProfile";
 
 const Stack = createStackNavigator();
 
@@ -51,13 +50,8 @@ function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="AddScreen"
-          component={AddScreen}
-          options={{ headerShown: false }}
-        />
-<Stack.Screen
-          name="add"
-          component={Budget}
+          name="EditProfile"
+          component={EditProfile}
           options={{ headerShown: false }}
         />
 

@@ -45,7 +45,12 @@ export default Setting = ({ navigation }) => {
             <Text style={{ color: "#666680", fontWeight: "600" }}>
               noah.22@gamil.com
             </Text>
-            <TouchableOpacity style={styles.monthButton} onPress={() => {}}>
+            <TouchableOpacity
+              style={styles.monthButton}
+              onPress={() => {
+                () => navigation.navigate("EditProfile");
+              }}
+            >
               <Text
                 style={{
                   fontWeight: "bold",
@@ -616,7 +621,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     marginTop: 10,
-    marginBottom : 5,
+    marginBottom: 5,
     textAlign: "center",
   },
 });
