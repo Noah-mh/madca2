@@ -47,9 +47,7 @@ export default Setting = ({ navigation }) => {
             </Text>
             <TouchableOpacity
               style={styles.monthButton}
-              onPress={() => {
-                () => navigation.navigate("EditProfile");
-              }}
+              onPress={() => navigation.navigate("EditProfile")}
             >
               <Text
                 style={{

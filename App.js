@@ -16,7 +16,7 @@ import RegisterScreen1 from "./component/register1";
 import RegisterScreen2 from "./component/register2";
 
 import SettingScreen from "./component/Setting";
-import EditProfile from "./component/setting/editProfile";
+import editProfile from "./component/setting/editProfile";
 
 const Stack = createStackNavigator();
 
@@ -51,7 +51,7 @@ function App() {
         />
         <Stack.Screen
           name="EditProfile"
-          component={EditProfile}
+          component={editProfile}
           options={{ headerShown: false }}
         />
 
