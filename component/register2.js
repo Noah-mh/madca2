@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,18 +6,25 @@ import {
   TextInput,
   StyleSheet,
   StatusBar,
+  AsyncStorage,
 } from "react-native";
 
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";
 import ProgressLine from "./progressLine";
 import validatePassword from "./validatePassword";
-
+import { UserContext } from "./UserContext";
 import { firebaseapp, db } from "../firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {  doc, setDoc } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 const auth = getAuth(firebaseapp);
+
+
 
 export default RegisterScreen2 = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -25,11 +32,10 @@ export default RegisterScreen2 = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [isPasswordMatch, setIsPasswordMatch] = useState(true);
 
- 
+  const { setUser } = useContext(UserContext);
 
   useEffect(() => {
     const passwordValidationResult = validatePassword(password);
@@ -40,15 +46,27 @@ export default RegisterScreen2 = ({ navigation }) => {
     }
   });
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const onHandleSignUp = async () => {
     try {
       if (email != "" && password != "") {
-        await createUserWithEmailAndPassword(auth, email, password);
-        const docRef = await addDoc(collection(db, "userData"), {
-          username: username,
-        });
-        //setSignupStatus("created user ok");
-        console.log("Document written with ID: ", docRef.id);
+        await createUserWithEmailAndPassword(auth, email, password).then(
+          (userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            // ...
+            setDoc(doc(db, "userData", user.uid), {
+              username: username,
+            }); //setSignupStatus("created user ok");
+           
+          }
+        );
       }
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -69,7 +87,7 @@ export default RegisterScreen2 = ({ navigation }) => {
     const hasNumbers = /\d/.test(password);
     const hasSymbols = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    if (!hasLetters ||  !hasSymbols) {
+    if (!hasLetters || !hasSymbols) {
       return 0.3;
     }
 
@@ -89,16 +107,14 @@ export default RegisterScreen2 = ({ navigation }) => {
     setConfirmPassword(text);
     setIsPasswordMatch(password === text);
   };
- 
-  let passwordStrengthColor = 'red';
+
+  let passwordStrengthColor = "red";
   if (passwordStrength >= 0.5) {
-    passwordStrengthColor = '#00FAD9';
+    passwordStrengthColor = "#00FAD9";
   }
   if (passwordStrength >= 0.8) {
-    passwordStrengthColor = 'green';
+    passwordStrengthColor = "green";
   }
-  
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -156,14 +172,17 @@ export default RegisterScreen2 = ({ navigation }) => {
           />
         </View>
         <View style={styles.line}>
-        <ProgressLine progress={passwordStrength} lineColor={passwordStrengthColor} />
+          <ProgressLine
+            progress={passwordStrength}
+            lineColor={passwordStrengthColor}
+          />
         </View>
         {passwordError !== "" && (
           <Text style={styles.errorMsg}>{passwordError}</Text>
         )}
-          {!isPasswordMatch && (
-        <Text style={styles.errorMsg}>Passwords do not match</Text>
-      )}
+        {!isPasswordMatch && (
+          <Text style={styles.errorMsg}>Passwords do not match</Text>
+        )}
       </View>
       <View style={{ alignItems: "center" }}>
         <CustomButton

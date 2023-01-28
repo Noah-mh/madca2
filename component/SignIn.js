@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,35 +6,68 @@ import {
   TextInput,
   StyleSheet,
   StatusBar,
-} from 'react-native';
+  AsyncStorage,
+} from "react-native";
 
-import AppLogo from './AppLogo';
-import CustomButton from './CustomButton';
+import AppLogo from "./AppLogo";
+import CustomButton from "./CustomButton";
+import { UserContext } from "./UserContext";
+import { firebaseapp, db } from "../firebase";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
+const auth = getAuth(firebaseapp);
 
 export default RegisterScreen2 = ({ navigation }) => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const onHandleSignIn = async () => {
+    try {
+      if (email != "" && password != "") {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+    navigation.navigate("BottomBar");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <AppLogo />
-      <View style={{ alignItems: 'center', marginTop: 40 }}>
+      <View style={{ alignItems: "center", marginTop: 40 }}>
         <View style={styles.inputitems}>
           <Text style={styles.subhead}>Email Address</Text>
           <TextInput
             style={styles.input}
             underlineColorAndroid="transparent"
-            placeholder={''}
+            placeholder={""}
             placeholderTextColor="black"
             autoCapitalize="none"
             value={email}
-            onChangeText={(text) => setEmail(text)}></TextInput>
+            onChangeText={(text) => setEmail(text)}
+          ></TextInput>
         </View>
         <View style={styles.inputitems}>
           <Text style={styles.subhead}>Password</Text>
           <TextInput
             style={styles.input}
             underlineColorAndroid="transparent"
-            placeholder={''}
+            placeholder={""}
             secureTextEntry={true}
             placeholderTextColor="black"
             autoCapitalize="none"
@@ -42,30 +75,32 @@ export default RegisterScreen2 = ({ navigation }) => {
             onChangeText={(text) => setPassword(text)}
           />
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', marginRight: 110 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flexDirection: "row", marginRight: 110 }}>
             <View style={styles.line} />
-            <Text style={{ color: '#666680' }}>Remember me</Text>
+            <Text style={{ color: "#666680" }}>Remember me</Text>
           </View>
-          <Text style={{ color: '#6E548C' }}>Forgot Password?</Text>
+          <Text style={{ color: "#6E548C" }}>Forgot Password?</Text>
         </View>
       </View>
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: "center" }}>
         <CustomButton
           text="Sign In"
           color="white"
           backgroundColor="#B21818"
           marginBottom={25}
-          onPress={() => navigation.navigate('BottomBar')}></CustomButton>
-        <Text style={{ color: 'white', marginTop: 30, marginBottom: 40 }}>
-           You don't have an account yet?
+          onPress={onHandleSignIn}
+        ></CustomButton>
+        <Text style={{ color: "white", marginTop: 30, marginBottom: 40 }}>
+          You don't have an account yet?
         </Text>
         <CustomButton
           text="Sign Up"
           color="white"
           backgroundColor="#666680"
           marginBottom={25}
-          onPress={() => navigation.navigate('Register1')}></CustomButton>
+          onPress={() => navigation.navigate("Register1")}
+        ></CustomButton>
       </View>
     </SafeAreaView>
   );
@@ -74,9 +109,9 @@ export default RegisterScreen2 = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    width: '100%',
-    backgroundColor: '#1C1C23',
+    justifyContent: "space-between",
+    width: "100%",
+    backgroundColor: "#1C1C23",
     marginTop: StatusBar.currentHeight || 0,
   },
 
@@ -84,19 +119,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   subhead: {
-    color: '#6E548C',
+    color: "#6E548C",
   },
 
   input: {
     borderRadius: 10,
-    borderColor: '#6E548C',
+    borderColor: "#6E548C",
     width: 350,
     height: 45,
     borderWidth: 1,
+    color: "white",
+    fontSize: 20,
+    paddingLeft: 10,
   },
   line: {
     borderRadius: 4,
-    borderColor: '#6E548C',
+    borderColor: "#6E548C",
     width: 15,
     height: 15,
     borderWidth: 1,

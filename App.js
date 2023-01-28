@@ -17,51 +17,53 @@ import RegisterScreen2 from "./component/register2";
 
 import SettingScreen from "./component/Setting";
 import editProfile from "./component/setting/editProfile";
-
+import { UserProvider } from "./component/UserContext";
 const Stack = createStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register1"
-          component={RegisterScreen1}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register2"
-          component={RegisterScreen2}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignIn"
-          component={SignInScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Setting"
-          component={SettingScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="EditProfile"
-          component={editProfile}
-          options={{ headerShown: false }}
-        />
+    <UserProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Welcome">
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register1"
+            component={RegisterScreen1}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register2"
+            component={RegisterScreen2}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignIn"
+            component={SignInScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Setting"
+            component={SettingScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={editProfile}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="BottomBar"
-          component={BottomBarNavigator}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="BottomBar"
+            component={BottomBarNavigator}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserProvider>
   );
 }
 

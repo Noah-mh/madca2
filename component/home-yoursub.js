@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useContext} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -13,11 +13,13 @@ import {
 
 // ico
 import { Ionicons } from '@expo/vector-icons';
-
+import { UserContext } from './UserContext';
 import AppLogo from './AppLogo';
 import CircularProgressBar from './circularProgressLine';
 
 export default HomeYourSub = ({ navigation }) => {
+  const { user } = useContext(UserContext);
+ console.log(user);
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.lightBG}>

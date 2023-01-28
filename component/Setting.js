@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -10,18 +10,42 @@ import {
   TouchableOpacity,
   Dimensions,
   TextInput,
+
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
-
+import { UserContext } from './UserContext';
 import CustomButton from "./CustomButton";
 import { firebaseapp, db } from "../firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { doc ,collection, addDoc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
+
+
 export default Setting = ({ navigation }) => {
+
+  const { user } = useContext(UserContext);
+  const [username, setUsename] = useState("");
+ 
+ useEffect(()=>{
+  (async()=>{
+    const docRef = doc(db, "userData",user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      setUsename(docSnap.data().username)
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+    
+  })()
+ },[])
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -46,9 +70,9 @@ export default Setting = ({ navigation }) => {
               style={{ width: 80, height: 80, borderRadius: 40 }}
               source={require("../assets/profile.jpg")}
             ></Image>
-            <Text style={styles.bill}>Noah</Text>
+            <Text style={styles.bill}>{username}</Text>
             <Text style={{ color: "#666680", fontWeight: "600" }}>
-              noah.22@gamil.com
+              {user.email}
             </Text>
             <TouchableOpacity
               style={styles.monthButton}
