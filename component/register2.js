@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -11,25 +11,94 @@ import {
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";
 import ProgressLine from "./progressLine";
-/* import FirebaseApp from "../firebase";
+import validatePassword from "./validatePassword";
 
-const auth = FirebaseApp.auth(); */
+import { firebaseapp, db } from "../firebase";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth(firebaseapp);
 
 export default RegisterScreen2 = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-/* 
+  const [confirmpassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
+
+ 
+
+  useEffect(() => {
+    const passwordValidationResult = validatePassword(password);
+    if (!passwordValidationResult.isValid) {
+      setPasswordError(passwordValidationResult.error);
+    } else {
+      setPasswordError("");
+    }
+  });
+
   const onHandleSignUp = async () => {
     try {
       if (email != "" && password != "") {
-        await auth.createUserWithEmailAndPassword(email, password);
-        setSignupStatus("created user ok");
+        await createUserWithEmailAndPassword(auth, email, password);
+        const docRef = await addDoc(collection(db, "userData"), {
+          username: username,
+        });
+        //setSignupStatus("created user ok");
+        console.log("Document written with ID: ", docRef.id);
       }
-    } catch (error) {
-      alert(error.message);
+    } catch (e) {
+      console.error("Error adding document: ", e);
     }
-  }; */
+    navigation.navigate("BottomBar");
+  };
+  const calculatePasswordStrength = (password) => {
+    // Minimum password length
+    const MIN_LENGTH = 8;
+
+    // Check if password length is less than 8
+    if (password.length < MIN_LENGTH) {
+      return 0.1;
+    }
+
+    // Check for mix of letters, numbers, and symbols
+    const hasLetters = /[a-zA-Z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSymbols = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasLetters ||  !hasSymbols) {
+      return 0.3;
+    }
+
+    if (!hasLetters || !hasNumbers || !hasSymbols) {
+      return 0.7;
+    }
+
+    return 1;
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    setPasswordStrength(calculatePasswordStrength(text));
+  };
+
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text);
+    setIsPasswordMatch(password === text);
+  };
+ 
+  let passwordStrengthColor = 'red';
+  if (passwordStrength >= 0.5) {
+    passwordStrengthColor = '#00FAD9';
+  }
+  if (passwordStrength >= 0.8) {
+    passwordStrengthColor = 'green';
+  }
+  
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,7 +110,7 @@ export default RegisterScreen2 = ({ navigation }) => {
             style={styles.input}
             underlineColorAndroid="transparent"
             placeholder={""}
-            placeholderTextColor="black"
+            placeholderTextColor="white"
             autoCapitalize="none"
             value={username}
             onChangeText={(text) => setUsername(text)}
@@ -69,9 +138,10 @@ export default RegisterScreen2 = ({ navigation }) => {
             placeholderTextColor="black"
             autoCapitalize="none"
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={handlePasswordChange}
           />
         </View>
+
         <View style={styles.inputitems}>
           <Text style={styles.subhead}>Confirm Password</Text>
           <TextInput
@@ -81,19 +151,19 @@ export default RegisterScreen2 = ({ navigation }) => {
             secureTextEntry={true}
             placeholderTextColor="black"
             autoCapitalize="none"
-            value={password}
-            onChangeText={(text) => setPassword(text)}
+            value={confirmpassword}
+            onChangeText={handleConfirmPasswordChange}
           />
         </View>
         <View style={styles.line}>
-          <ProgressLine progress={1} lineColor="#00FAD9" />
-          <ProgressLine progress={1} lineColor="#00FAD9" />
-          <ProgressLine progress={1} lineColor="#00FAD9" />
-          <ProgressLine progress={0.3} lineColor="#00FAD9" />
+        <ProgressLine progress={passwordStrength} lineColor={passwordStrengthColor} />
         </View>
-        <Text style={styles.termAndCondition}>
-          Use 8 or more characters with a mix of letters, numbers & symbols.
-        </Text>
+        {passwordError !== "" && (
+          <Text style={styles.errorMsg}>{passwordError}</Text>
+        )}
+          {!isPasswordMatch && (
+        <Text style={styles.errorMsg}>Passwords do not match</Text>
+      )}
       </View>
       <View style={{ alignItems: "center" }}>
         <CustomButton
@@ -101,7 +171,7 @@ export default RegisterScreen2 = ({ navigation }) => {
           color="white"
           backgroundColor="#B21818"
           marginBottom={25}
-          onPress={ () => navigation.navigate("BottomBar")}
+          onPress={onHandleSignUp}
         ></CustomButton>
         <Text style={{ color: "white", marginTop: 30, marginBottom: 40 }}>
           Do you have already an account?
@@ -141,13 +211,16 @@ const styles = StyleSheet.create({
     width: 350,
     height: 45,
     borderWidth: 1,
+    color: "white",
+    fontSize: 20,
+    paddingLeft: 10,
   },
   line: {
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    width: 85,
+    width: 330,
     marginTop: 10,
     marginBottom: 10,
   },
@@ -155,6 +228,12 @@ const styles = StyleSheet.create({
   termAndCondition: {
     color: "#6E548C",
     margin: 25,
+    textAlign: "left",
+    width: 330,
+  },
+  errorMsg: {
+    color: "red",
+    margin: 10,
     textAlign: "left",
     width: 330,
   },

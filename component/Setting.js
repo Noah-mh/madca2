@@ -15,6 +15,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 
 import CustomButton from "./CustomButton";
+import { firebaseapp, db } from "../firebase";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
 
 export default Setting = ({ navigation }) => {
   return (

@@ -1,19 +1,19 @@
-import firebase from 'firebase/app';
-import 'firebase/database';
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+// TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyC9mDDpyr-TU6nWMrN6giIRDiKg10izWsc",
-    authDomain: "mad-assignment-b1c4e.firebaseapp.com",
-    projectId: "mad-assignment-b1c4e",
-    storageBucket: "mad-assignment-b1c4e.appspot.com",
-    messagingSenderId: "444639331747",
-    appId: "1:444639331747:web:5bae66ea3243e8c0048616",
-    measurementId: "G-VJFCN9J2CL"
-  };
+  apiKey: "AIzaSyC9mDDpyr-TU6nWMrN6giIRDiKg10izWsc",
+  authDomain: "mad-assignment-b1c4e.firebaseapp.com",
+  projectId: "mad-assignment-b1c4e",
+  storageBucket: "mad-assignment-b1c4e.appspot.com",
+  messagingSenderId: "444639331747",
+  appId: "1:444639331747:web:5bae66ea3243e8c0048616",
+  measurementId: "G-VJFCN9J2CL",
+};
 
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+const firebaseapp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseapp);
 
-export { firebase, database };
+export {firebaseapp, db} ;
