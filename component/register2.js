@@ -15,7 +15,7 @@ import ProgressLine from "./progressLine";
 import validatePassword from "./validatePassword";
 import { UserContext } from "./UserContext";
 import { firebaseapp, db } from "../firebase";
-import {  doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -23,8 +23,6 @@ import {
 } from "firebase/auth";
 
 const auth = getAuth(firebaseapp);
-
-
 
 export default RegisterScreen2 = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -46,32 +44,25 @@ export default RegisterScreen2 = ({ navigation }) => {
     }
   });
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const onHandleSignUp = async () => {
-    try {
-      if (email != "" && password != "") {
-        await createUserWithEmailAndPassword(auth, email, password).then(
-          (userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            // ...
-            setDoc(doc(db, "userData", user.uid), {
-              username: username,
-            }); //setSignupStatus("created user ok");
-           
-          }
-        );
-      }
-    } catch (e) {
-      console.error("Error adding document: ", e);
+  const onHandleSignUp = () => {
+    if (email != "" && password != "") {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const userinfo = userCredential.user;
+          // ...
+          setUser(userinfo);
+          setDoc(doc(db, "userData", userinfo.uid), {
+            username: username,
+          });
+          navigation.navigate("BottomBar");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage);
+        });
     }
-    navigation.navigate("BottomBar");
   };
   const calculatePasswordStrength = (password) => {
     // Minimum password length

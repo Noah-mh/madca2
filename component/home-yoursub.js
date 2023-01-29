@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, { useContext } from "react";
 import {
   Alert,
   SafeAreaView,
@@ -9,28 +9,30 @@ import {
   StatusBar,
   TouchableOpacity,
   ScrollView,
-} from 'react-native';
+} from "react-native";
 
 // ico
-import { Ionicons } from '@expo/vector-icons';
-import { UserContext } from './UserContext';
-import AppLogo from './AppLogo';
-import CircularProgressBar from './circularProgressLine';
+import { Ionicons } from "@expo/vector-icons";
+import { UserContext } from "./UserContext";
+import AppLogo from "./AppLogo";
+import CircularProgressBar from "./circularProgressLine";
 
 export default HomeYourSub = ({ navigation }) => {
   const { user } = useContext(UserContext);
- console.log(user);
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.lightBG}>
         <Image
           style={styles.circleBG}
-          source={require('../assets/CriclesBG.png')}></Image>
+          source={require("../assets/CriclesBG.png")}
+        ></Image>
       </View>
       <View>
         <TouchableOpacity
           style={styles.iconContainer}
-          onPress={() => navigation.navigate('Setting')}>
+          onPress={() => navigation.navigate("Setting")}
+        >
           <Ionicons
             style={styles.icon}
             name="settings-outline"
@@ -38,71 +40,75 @@ export default HomeYourSub = ({ navigation }) => {
             color="#A2A2B5"
           />
         </TouchableOpacity>
-        <View style={{ position: 'absolute', top: 40, left: 65 }}>
+        <View style={{ position: "absolute", top: 40, left: 65 }}>
           <CircularProgressBar
             size={300}
             value={65}
-            degree={'-98deg'}
-            color={'#fff'}
+            degree={"-98deg"}
+            color={"#fff"}
             zIndex={-1}
           />
           <CircularProgressBar
             size={300}
             value={60}
-            degree={'-135deg'}
-            color={'#B21818'}
+            degree={"-135deg"}
+            color={"#B21818"}
             zIndex={1}
           />
         </View>
-        <View style={{ marginTop: 100, alignItems: 'center' }}>
+        <View style={{ marginTop: 100, alignItems: "center" }}>
           <AppLogo />
 
-          <View style={{ alignItems: 'center' }}>
+          <View style={{ alignItems: "center" }}>
             <Text style={styles.bill}>$1,235</Text>
             <Text style={styles.billtext}>This month bills</Text>
           </View>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Budget')}>
-            <Text style={{ fontWeight: 'bold', color: 'white' }}>
+            onPress={() => navigation.navigate("Budget")}
+          >
+            <Text style={{ fontWeight: "bold", color: "white" }}>
               See Your Budget
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: "row" }}>
           <View style={styles.box}>
-            <Text style={{ color: '#fff' }}>Active Subs</Text>
+            <Text style={{ color: "#fff" }}>Active Subs</Text>
             <Text style={styles.textInsideBox}>12</Text>
           </View>
           <View style={styles.box}>
-            <Text style={{ color: '#fff' }}>Highest Subs</Text>
+            <Text style={{ color: "#fff" }}>Highest Subs</Text>
             <Text style={styles.textInsideBox}>$37.99</Text>
           </View>
           <View style={styles.box}>
-            <Text style={{ color: '#fff' }}>Lowest Subs</Text>
+            <Text style={{ color: "#fff" }}>Lowest Subs</Text>
             <Text style={styles.textInsideBox}>$5.99</Text>
           </View>
         </View>
         <View
           style={[
             styles.subscriptionBox,
-            { flexDirection: 'row', marginTop: 28, backgroundColor: '#0E0E12' },
-          ]}>
+            { flexDirection: "row", marginTop: 28, backgroundColor: "#0E0E12" },
+          ]}
+        >
           <TouchableOpacity
             style={[
               styles.button2,
-              { backgroundColor: 'rgba(78, 78, 97, 0.4)' },
-            ]}>
-            <Text style={{ fontWeight: 'bold', color: 'white' }}>
+              { backgroundColor: "rgba(78, 78, 97, 0.4)" },
+            ]}
+          >
+            <Text style={{ fontWeight: "bold", color: "white" }}>
               Your Subscripton
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button2}
-            onPress={() => navigation.navigate('HomeUpcoming')}>
-            <Text style={{ fontWeight: 'bold', color: 'white' }}>
+            onPress={() => navigation.navigate("HomeUpcoming")}
+          >
+            <Text style={{ fontWeight: "bold", color: "white" }}>
               Upcoming Bills
             </Text>
           </TouchableOpacity>
@@ -110,72 +116,80 @@ export default HomeYourSub = ({ navigation }) => {
         <ScrollView horizontal={false}>
           <TouchableOpacity
             onPress={() => {
-              Alert.alert('This function is not finished');
-            }}>
+              navigation.navigate("Info");
+            }}
+          >
             <View
               style={[
                 styles.subscriptionBox,
                 {
-                  flexDirection: 'row',
+                  flexDirection: "row",
                   marginTop: 15,
-                  backgroundColor: '#353542',
+                  backgroundColor: "#353542",
                 },
-              ]}>
-              <Image source={require('../assets/SpotifyLogo.png')}></Image>
+              ]}
+            >
+              <Image source={require("../assets/SpotifyLogo.png")}></Image>
               <Text style={styles.subscriptionText1}>Spotify</Text>
               <Text style={styles.subscriptionText2}>$5.99</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              Alert.alert('This function is not finished');
-            }}>
+              navigation.navigate("Info");
+            }}
+          >
             <View
               style={[
                 styles.subscriptionBox,
                 {
-                  flexDirection: 'row',
+                  flexDirection: "row",
                   marginTop: 10,
-                  backgroundColor: '#353542',
+                  backgroundColor: "#353542",
                 },
-              ]}>
-              <Image source={require('../assets/YTPremiumLogo.png')}></Image>
+              ]}
+            >
+              <Image source={require("../assets/YTPremiumLogo.png")}></Image>
               <Text style={styles.subscriptionText1}>YouTube Premium</Text>
               <Text style={styles.subscriptionText2}>$18.99</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              Alert.alert('This function is not finished');
-            }}>
+              navigation.navigate("Info");
+            }}
+          >
             <View
               style={[
                 styles.subscriptionBox,
                 {
-                  flexDirection: 'row',
+                  flexDirection: "row",
                   marginTop: 10,
-                  backgroundColor: '#353542',
+                  backgroundColor: "#353542",
                 },
-              ]}>
-              <Image source={require('../assets/OneDriveLogo.png')}></Image>
+              ]}
+            >
+              <Image source={require("../assets/OneDriveLogo.png")}></Image>
               <Text style={styles.subscriptionText1}>Microsoft OneDrive</Text>
               <Text style={styles.subscriptionText2}>$29.99</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              Alert.alert('This function is not finished');
-            }}>
+              navigation.navigate("Info");
+            }}
+          >
             <View
               style={[
                 styles.subscriptionBox,
                 {
-                  flexDirection: 'row',
+                  flexDirection: "row",
                   marginTop: 10,
-                  backgroundColor: '#353542',
+                  backgroundColor: "#353542",
                 },
-              ]}>
-              <Image source={require('../assets/NetflixLogo.png')}></Image>
+              ]}
+            >
+              <Image source={require("../assets/NetflixLogo.png")}></Image>
               <Text style={styles.subscriptionText1}>Netflix</Text>
               <Text style={styles.subscriptionText2}>$37.99</Text>
             </View>
@@ -189,13 +203,13 @@ export default HomeYourSub = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    width: '100%',
-    backgroundColor: '#1C1C23',
+    justifyContent: "space-between",
+    width: "100%",
+    backgroundColor: "#1C1C23",
     marginTop: StatusBar.currentHeight || 0,
   },
   circleBG: {
-    position: 'absolute',
+    position: "absolute",
     width: 426,
     height: 488,
     borderRadius: 20,
@@ -203,17 +217,17 @@ const styles = StyleSheet.create({
   },
 
   lightBG: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,
-    width: '100%',
-    height: '58%',
+    width: "100%",
+    height: "58%",
     zIndex: -1,
   },
 
   iconContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 20,
   },
@@ -222,31 +236,31 @@ const styles = StyleSheet.create({
     height: 32,
   },
   bill: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 50,
-    color: 'white',
+    color: "white",
     marginTop: 40,
   },
   billtext: {
     fontSize: 15,
-    color: '#83839C',
+    color: "#83839C",
   },
 
   button: {
     borderRadius: 20,
     padding: 10,
     borderWidth: 2,
-    alignItems: 'center',
+    alignItems: "center",
     width: 180,
 
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     opacity: 0.8,
     marginTop: 25,
   },
   button2: {
     borderRadius: 10,
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
     width: 180,
     marginLeft: 8,
     marginRight: 8,
@@ -256,11 +270,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: 120,
     height: 80,
-    backgroundColor: '#4E4E61',
+    backgroundColor: "#4E4E61",
     opacity: 0.6,
     marginTop: 20,
     marginLeft: 12,
@@ -271,29 +285,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '95%',
+    alignItems: "center",
+    justifyContent: "center",
+    width: "95%",
     left: 11,
   },
 
   textInsideBox: {
-    fontSize: '20',
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: "20",
+    fontWeight: "bold",
+    color: "white",
   },
 
   subscriptionText1: {
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginLeft: 15,
-    width: '70%',
-    textAlign: 'left',
+    width: "70%",
+    textAlign: "left",
   },
   subscriptionText2: {
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginLeft: 5,
-    textAlign: 'right',
+    textAlign: "right",
   },
 });

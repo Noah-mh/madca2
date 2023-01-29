@@ -68,6 +68,8 @@ export default AddItem = ({ navigation }) => {
 
   const [scrollOffset, setScrollOffset] = useState(0);
 
+
+  
   const handleScroll = (event) => {
     selectedIndex = Math.round(event.nativeEvent.contentOffset.x / 450);
     console.log(selectedIndex);

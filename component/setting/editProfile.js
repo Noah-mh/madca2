@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../UserContext";
 import {
   SafeAreaView,
   ScrollView,
@@ -11,12 +12,99 @@ import {
   Dimensions,
   TextInput,
 } from "react-native";
-// ico
-import { Ionicons } from "@expo/vector-icons";
+import validatePassword from "../validatePassword";
+import { firebaseapp, db } from "../../firebase";
+import { collection, doc, updateDoc, getDoc } from "firebase/firestore";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 
-import CustomButton from "../CustomButton";
+const auth = getAuth(firebaseapp);
 
 export default EditProfile = ({ navigation }) => {
+  const [newUsername, setNewUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmpassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
+
+  const { user, setUser } = useContext(UserContext);
+  const [username, setUsename] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const docRef = doc(db, "userData", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          setUsename(docSnap.data().username);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      } catch (error) {
+        alert(error.message);
+      }
+    })();
+  }, [user]);
+
+  useEffect(() => {
+    const passwordValidationResult = validatePassword(password);
+    if (!passwordValidationResult.isValid) {
+      setPasswordError(passwordValidationResult.error);
+    } else {
+      setPasswordError("");
+    }
+  });
+
+  const onHandleDone = async () => {
+    try {
+      if ((newUsername != "", email != "" && password != "")) {
+        const docRef = doc(db, "userData", user.uid);
+        await updateDoc(docRef, {
+          username: newUsername,
+        });
+        await updateEmail(auth.currentUser, email);
+
+        await updatePassword(auth.currentUser, password);
+
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            // Signed in
+            const userinfo = userCredential.user;
+            // ...
+            setUser(userinfo);
+            console.log(user);
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(errorMessage);
+          });
+        alert("Update Okay!");
+        navigation.navigate("EditProfile");
+      }
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+  };
+
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text);
+    setIsPasswordMatch(password === text);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -31,39 +119,85 @@ export default EditProfile = ({ navigation }) => {
             <Text style={{ color: "#A2A2B5" }}>cancel</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.doneContainer}
-          onPress={() => navigation.navigate("Setting")}
-        >
+        <TouchableOpacity style={styles.doneContainer} onPress={onHandleDone}>
           <View>
             <Text style={{ color: "#1778F2" }}>Done</Text>
           </View>
         </TouchableOpacity>
-
-        <View style={{ marginTop: 70, alignItems: "center" }}>
+        <View style={styles.line}></View>
+        <View style={{ marginTop: 20, alignItems: "center" }}>
           <View style={{ alignItems: "center" }}>
             <Image
               style={{ width: 80, height: 80, borderRadius: 40 }}
               source={require("../../assets/profile.jpg")}
             ></Image>
-            <Text style={styles.bill}>Noah</Text>
-            <Text style={{ color: "#666680", fontWeight: "600" }}>
-              noah.22@gamil.com
-            </Text>
-            <TouchableOpacity style={styles.monthButton} onPress={() => {}}>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  color: "white",
-                  marginRight: 3,
-                  width: "80%",
-                }}
-              >
-                Edit Profile
-              </Text>
+            <TouchableOpacity>
+              <Text style={styles.bill}>Change Profile Picture</Text>
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.line}></View>
+        <View style={{ alignItems: "center", marginTop: 20 }}>
+          <View style={styles.inputitems}>
+            <Text style={styles.subhead}>Name</Text>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              placeholder={username}
+              placeholderTextColor="white"
+              autoCapitalize="none"
+              value={newUsername}
+              onChangeText={(text) => setNewUsername(text)}
+            ></TextInput>
+          </View>
+          <View style={styles.inputitems}>
+            <Text style={styles.subhead}>Email Address</Text>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              placeholder={user.email}
+              placeholderTextColor="white"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            ></TextInput>
+          </View>
+          <View style={styles.inputitems}>
+            <Text style={styles.subhead}>Password</Text>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              placeholder={""}
+              secureTextEntry={true}
+              placeholderTextColor="black"
+              autoCapitalize="none"
+              value={password}
+              onChangeText={handlePasswordChange}
+            />
+          </View>
+
+          <View style={styles.inputitems}>
+            <Text style={styles.subhead}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              placeholder={""}
+              secureTextEntry={true}
+              placeholderTextColor="black"
+              autoCapitalize="none"
+              value={confirmpassword}
+              onChangeText={handleConfirmPasswordChange}
+            />
+          </View>
+
+          {passwordError !== "" && (
+            <Text style={styles.errorMsg}>{passwordError}</Text>
+          )}
+          {!isPasswordMatch && (
+            <Text style={styles.errorMsg}>Passwords do not match</Text>
+          )}
+        </View>
+        <View style={styles.line}></View>
       </View>
     </SafeAreaView>
   );
@@ -104,6 +238,37 @@ const styles = StyleSheet.create({
     alignItems: "right",
     right: 0,
   },
+  inputitems: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginBottom: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  subhead: {
+    color: "white",
+    fontSize: 16,
+    width: "40%",
+  },
+  errorMsg: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    color: "red",
+    margin: 10,
+    textAlign: "left",
+    width: "100%",
+  },
+  input: {
+    borderRadius: 10,
+    borderColor: "white",
+    width: "60%",
+    height: 45,
+    borderBottomWidth: 1,
+    color: "white",
+    fontSize: 18,
+    paddingLeft: 10,
+  },
 
   header: {
     top: 15,
@@ -141,11 +306,16 @@ const styles = StyleSheet.create({
   },
 
   bill: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "white",
-    marginTop: 10,
-    marginBottom: 5,
+    fontWeight: "medium",
+    fontSize: 18,
+    color: "#1778F2",
+    marginTop: 30,
     textAlign: "center",
+  },
+  line: {
+    padding: 10,
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    marginVertical: 10,
   },
 });

@@ -43,7 +43,7 @@ export default Setting = ({ navigation }) => {
     }
     
   })()
- },[])
+ },[user])
 
 
   return (

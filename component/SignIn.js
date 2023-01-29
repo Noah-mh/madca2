@@ -6,7 +6,6 @@ import {
   TextInput,
   StyleSheet,
   StatusBar,
-  AsyncStorage,
 } from "react-native";
 
 import AppLogo from "./AppLogo";
@@ -26,24 +25,24 @@ const auth = getAuth(firebaseapp);
 export default RegisterScreen2 = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const onHandleSignIn = async () => {
-    try {
-      if (email != "" && password != "") {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
-    } catch (error) {
-      alert(error.message);
+  const onHandleSignIn = () => {
+    if (email != "" && password != "") {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const userinfo = userCredential.user;
+          // ...
+          setUser(userinfo);
+          navigation.navigate("BottomBar");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage);
+        });
     }
-    navigation.navigate("BottomBar");
   };
 
   return (
