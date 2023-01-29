@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Alert,
   SafeAreaView,
@@ -16,10 +16,39 @@ import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
 import AppLogo from "./AppLogo";
 import CircularProgressBar from "./circularProgressLine";
+import { firebaseapp, db } from "../firebase";
+import { doc, collection, addDoc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
 
 export default HomeYourSub = ({ navigation }) => {
   const { user } = useContext(UserContext);
-  
+
+  const [data, setData] = useState("");
+
+  const [cost, setCost] = useState([]);
+  const [name, setName] = useState([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const docRef = doc(db, "userData", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          
+          setData(docSnap.data());
+  console.log("Document data:", data);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [user]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.lightBG}>

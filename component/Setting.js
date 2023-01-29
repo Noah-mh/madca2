@@ -27,7 +27,7 @@ export default Setting = ({ navigation }) => {
   const [username, setUsename] = useState("");
 
   useEffect(() => {
-    (async () => {
+    (async () => {try{
       const docRef = doc(db, "userData", user.uid);
       const docSnap = await getDoc(docRef);
 
@@ -37,6 +37,8 @@ export default Setting = ({ navigation }) => {
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
+      }}catch(error){
+        console.log("Error getting document:", error);
       }
     })();
   }, [user]);

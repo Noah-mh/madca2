@@ -23,11 +23,33 @@ import {
   updateEmail,
   updatePassword,
 } from "firebase/auth";
-import Setting from "./Setting";
+import CustomButton from "./CustomButton";
 
 const auth = getAuth(firebaseapp);
 
 export default SubInfo = ({ navigation }) => {
+
+    const { user } = useContext(UserContext);
+  const [data, setData] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      const docRef = doc(db, "userData", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        setData(docSnap.data());
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    })();
+  }, [user]);
+
+
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container2}>
@@ -36,7 +58,7 @@ export default SubInfo = ({ navigation }) => {
         </View>
         <TouchableOpacity
           style={styles.cancelContainer}
-          onPress={() => navigation.navigate("Setting")}
+          onPress={() => navigation.navigate("BottomBar")}
         >
           <Ionicons
             style={styles.icon}
@@ -53,22 +75,142 @@ export default SubInfo = ({ navigation }) => {
             color="#A2A2B5"
           />
         </TouchableOpacity>
-       
-        <View style={{ marginTop: 80, alignItems: "center" }}>
+
+        <View style={{ marginTop: 150, alignItems: "center" }}>
           <View style={{ alignItems: "center" }}>
             <Image
               style={{ width: 120, height: 120, borderRadius: 10 }}
               source={require("../assets/NetflixBiggerLogo.jpeg")}
             ></Image>
-            
-              <Text style={styles.bill}>Netflix</Text>
-              <Text style={styles.bill}>$37.99</Text>
-         
+
+            <Text style={styles.bill}>Netflix</Text>
+            <Text style={styles.bill}>$37.99</Text>
           </View>
         </View>
         <View style={styles.line}></View>
+        <View
+          style={{
+            padding: 10,
+            marginTop: 5,
 
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <View style={styles.categoryBox}>
+            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "80%",
+                }}
+              >
+                <Text style={styles.categoryText1}>Name</Text>
+              </View>
+              <View
+                style={{
+                  alignItems: "right",
+                  justifyContent: "center",
+                  width: "20%",
+                }}
+              >
+                <Text style={styles.categoryText2}>Date</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "80%",
+                }}
+              >
+                <Text style={styles.categoryText1}>Description</Text>
+              </View>
+              <View
+                style={{
+                  alignItems: "right",
+                  justifyContent: "center",
+                  width: "20%",
+                }}
+              >
+                <Text style={styles.categoryText2}>Average</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "70%",
+                }}
+              >
+                <Text style={styles.categoryText1}>Category</Text>
+              </View>
+              <View
+                style={{
+                  alignItems: "right",
+                  justifyContent: "center",
+                  width: "30%",
+                }}
+              >
+                <Text style={styles.categoryText2}>Enterteinment</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "80%",
+                }}
+              >
+                <Text style={styles.categoryText1}>Reminder</Text>
+              </View>
+              <View
+                style={{
+                  alignItems: "right",
+                  justifyContent: "center",
+                  width: "20%",
+                }}
+              >
+                <Text style={styles.categoryText2}>Never</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "80%",
+                }}
+              >
+                <Text style={styles.categoryText1}>Currency</Text>
+              </View>
+              <View
+                style={{
+                  alignItems: "right",
+                  justifyContent: "center",
+                  width: "20%",
+                }}
+              >
+                <Text style={styles.categoryText2}>SGD ($)</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.line}></View>
+        <View style={{ padding: 20, alignItems: "center" }}>
+              <CustomButton
+                text="Close"
+                color="white"
+                backgroundColor="#A2A2B5"
+                marginTop={50}
+                onPress={() => navigation.navigate("BottomBar")}
+              ></CustomButton>
+            </View>
       </View>
     </SafeAreaView>
   );
@@ -97,7 +239,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
-    width: "95%",
+    width: "100%",
     backgroundColor: "#353542",
     marginTop: 10,
   },
@@ -105,16 +247,12 @@ const styles = StyleSheet.create({
   categoryText1: {
     fontWeight: "bold",
     color: "white",
-    marginLeft: 15,
     textAlign: "left",
   },
   categoryText2: {
     color: "#A2A2B5",
-    marginLeft: 5,
-    marginRight: 0,
+    alignSelf: "flex-end",
     textAlign: "right",
-    alignItems: "right",
-    right: 0,
   },
   inputitems: {
     paddingLeft: 20,
