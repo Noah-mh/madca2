@@ -10,41 +10,36 @@ import {
   TouchableOpacity,
   Dimensions,
   TextInput,
-
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
-import { UserContext } from './UserContext';
+import { UserContext } from "./UserContext";
 import CustomButton from "./CustomButton";
+import SwitchIcon from "./switch";
 import { firebaseapp, db } from "../firebase";
-import { doc ,collection, addDoc, getDoc } from "firebase/firestore";
+import { doc, collection, addDoc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-
-
 export default Setting = ({ navigation }) => {
-
   const { user } = useContext(UserContext);
   const [username, setUsename] = useState("");
- 
- useEffect(()=>{
-  (async()=>{
-    const docRef = doc(db, "userData",user.uid);
-    const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      setUsename(docSnap.data().username)
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
-    
-  })()
- },[user])
+  useEffect(() => {
+    (async () => {
+      const docRef = doc(db, "userData", user.uid);
+      const docSnap = await getDoc(docRef);
 
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        setUsename(docSnap.data().username);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    })();
+  }, [user]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -154,7 +149,7 @@ export default Setting = ({ navigation }) => {
                     style={{
                       alignItems: "left",
                       justifyContent: "center",
-                      width: "70%",
+                      width: "77%",
                     }}
                   >
                     <Text style={styles.categoryText1}>iCloud Sync</Text>
@@ -163,17 +158,12 @@ export default Setting = ({ navigation }) => {
                     style={{
                       alignItems: "right",
                       justifyContent: "center",
-                      width: "18%",
+                      width: "16%",
                     }}
                   >
-                    <Text style={styles.categoryText2}>Face ID</Text>
+                    <SwitchIcon/>
                   </View>
-                  <Ionicons
-                    style={{ width: "5%" }}
-                    name="chevron-forward-outline"
-                    size="20"
-                    color="#A2A2B5"
-                  />
+                  
                 </TouchableOpacity>
               </View>
             </View>

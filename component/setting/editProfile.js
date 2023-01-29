@@ -90,7 +90,7 @@ export default EditProfile = ({ navigation }) => {
             alert(errorMessage);
           });
         alert("Update Okay!");
-        navigation.navigate("EditProfile");
+        navigation.navigate("Setting");
       }
     } catch (e) {
       console.error("Error adding document: ", e);
