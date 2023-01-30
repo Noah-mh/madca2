@@ -19,212 +19,186 @@ import CircularProgressBar from "./circularProgressLine";
 import { firebaseapp, db } from "../firebase";
 import { doc, collection, addDoc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Loading from "./Loading";
+import { FlatList } from "react-native-gesture-handler";
 
 const auth = getAuth();
 
 export default HomeYourSub = ({ navigation }) => {
   const { user } = useContext(UserContext);
 
-  const [data, setData] = useState("");
+  const [subscription, setSubscription] = useState([]);
+  const [totalCost, setTotalCost] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const [cost, setCost] = useState([]);
-  const [name, setName] = useState([]);
-  useEffect(() => {
-    (async () => {
-      try {
-        const docRef = doc(db, "userData", user.uid);
-        const docSnap = await getDoc(docRef);
+  const imageMapping = {
+    Spotify: require("../assets/SpotifyLogo.png"),
+    "YouTube Premium": require("../assets/YTPremiumLogo.png"),
+    "Microsoft Onedrive": require("../assets/OneDriveLogo.png"),
+    Netflix: require("../assets/NetflixLogo.png"),
+    "HBO Go": require("../assets/HBOGOLogo.png"),
+  };
 
-        if (docSnap.exists()) {
-          
-          setData(docSnap.data());
-  console.log("Document data:", data);
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      } catch (error) {
-        console.log(error);
+  const getUserData = async () => {
+    try {
+      const docRef = doc(db, "userData", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log(docSnap.data());
+        setSubscription(docSnap.data().subscriptions);
+
+        setLoading(false);
+        console.log("subscription :", subscription);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
       }
-    })();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getUserData();
   }, [user]);
+
+  useEffect(() => {
+    if (!subscription) {
+      return;
+    }
+    const calculateTotal = subscription.reduce((total, subscription) => {
+      return total + parseFloat(subscription.cost);
+    }, 0);
+    setTotalCost(calculateTotal);
+    console.log("subscription :", totalCost);
+  }, [subscription]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.lightBG}>
-        <Image
-          style={styles.circleBG}
-          source={require("../assets/CriclesBG.png")}
-        ></Image>
-      </View>
-      <View>
-        <TouchableOpacity
-          style={styles.iconContainer}
-          onPress={() => navigation.navigate("Setting")}
-        >
-          <Ionicons
-            style={styles.icon}
-            name="settings-outline"
-            size="30"
-            color="#A2A2B5"
-          />
-        </TouchableOpacity>
-        <View style={{ position: "absolute", top: 40, left: 65 }}>
-          <CircularProgressBar
-            size={300}
-            value={65}
-            degree={"-98deg"}
-            color={"#fff"}
-            zIndex={-1}
-          />
-          <CircularProgressBar
-            size={300}
-            value={60}
-            degree={"-135deg"}
-            color={"#B21818"}
-            zIndex={1}
-          />
-        </View>
-        <View style={{ marginTop: 100, alignItems: "center" }}>
-          <AppLogo />
+      {loading ? (
+        <Loading />
+      ) : (
+        <View>
+          <View>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => navigation.navigate("Setting")}
+            >
+              <Ionicons
+                style={styles.icon}
+                name="settings-outline"
+                size="30"
+                color="#A2A2B5"
+              />
+            </TouchableOpacity>
+            <View style={{ position: "absolute", top: 40, left: 65 }}>
+              <CircularProgressBar
+                size={300}
+                value={65}
+                degree={"-98deg"}
+                color={"#fff"}
+                zIndex={-1}
+              />
+              <CircularProgressBar
+                size={300}
+                value={60}
+                degree={"-135deg"}
+                color={"#B21818"}
+                zIndex={1}
+              />
+            </View>
+            <View style={{ marginTop: 100, alignItems: "center" }}>
+              <AppLogo />
 
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.bill}>$1,235</Text>
-            <Text style={styles.billtext}>This month bills</Text>
-          </View>
+              <View style={{ alignItems: "center" }}>
+                <Text style={styles.bill}>${totalCost}</Text>
+                <Text style={styles.billtext}>This month bills</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.navigate("Budget")}
+              >
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  See Your Budget
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Budget")}
-          >
-            <Text style={{ fontWeight: "bold", color: "white" }}>
-              See Your Budget
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ flexDirection: "row" }}>
-          <View style={styles.box}>
-            <Text style={{ color: "#fff" }}>Active Subs</Text>
-            <Text style={styles.textInsideBox}>12</Text>
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.box}>
+                <Text style={{ color: "#fff" }}>Active Subs</Text>
+                <Text style={styles.textInsideBox}>{subscription?.length}</Text>
+              </View>
+              <View style={styles.box}>
+                <Text style={{ color: "#fff" }}>Highest Subs</Text>
+                <Text style={styles.textInsideBox}>${totalCost}</Text>
+              </View>
+              <View style={styles.box}>
+                <Text style={{ color: "#fff" }}>Lowest Subs</Text>
+                <Text style={styles.textInsideBox}>$5.99</Text>
+              </View>
+            </View>
+            <View
+              style={[
+                styles.subscriptionBox,
+                {
+                  flexDirection: "row",
+                  marginTop: 28,
+                  backgroundColor: "#0E0E12",
+                },
+              ]}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.button2,
+                  { backgroundColor: "rgba(78, 78, 97, 0.4)" },
+                ]}
+              >
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  Your Subscripton
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button2}
+                onPress={() => navigation.navigate("HomeUpcoming")}
+              >
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  Upcoming Bills
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={subscription}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("Info");
+                    }}
+                  >
+                    <View
+                      style={[
+                        styles.subscriptionBox,
+                        {
+                          flexDirection: "row",
+                          marginTop: 15,
+                          backgroundColor: "#353542",
+                        },
+                      ]}
+                    >
+                      <Image source={imageMapping[item.subName]}></Image>
+                      <Text style={styles.subscriptionText1}>
+                        {item.subName}
+                      </Text>
+                      <Text style={styles.subscriptionText2}>${item.cost}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
           </View>
-          <View style={styles.box}>
-            <Text style={{ color: "#fff" }}>Highest Subs</Text>
-            <Text style={styles.textInsideBox}>$37.99</Text>
-          </View>
-          <View style={styles.box}>
-            <Text style={{ color: "#fff" }}>Lowest Subs</Text>
-            <Text style={styles.textInsideBox}>$5.99</Text>
-          </View>
         </View>
-        <View
-          style={[
-            styles.subscriptionBox,
-            { flexDirection: "row", marginTop: 28, backgroundColor: "#0E0E12" },
-          ]}
-        >
-          <TouchableOpacity
-            style={[
-              styles.button2,
-              { backgroundColor: "rgba(78, 78, 97, 0.4)" },
-            ]}
-          >
-            <Text style={{ fontWeight: "bold", color: "white" }}>
-              Your Subscripton
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button2}
-            onPress={() => navigation.navigate("HomeUpcoming")}
-          >
-            <Text style={{ fontWeight: "bold", color: "white" }}>
-              Upcoming Bills
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView horizontal={false}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Info");
-            }}
-          >
-            <View
-              style={[
-                styles.subscriptionBox,
-                {
-                  flexDirection: "row",
-                  marginTop: 15,
-                  backgroundColor: "#353542",
-                },
-              ]}
-            >
-              <Image source={require("../assets/SpotifyLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>Spotify</Text>
-              <Text style={styles.subscriptionText2}>$5.99</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Info");
-            }}
-          >
-            <View
-              style={[
-                styles.subscriptionBox,
-                {
-                  flexDirection: "row",
-                  marginTop: 10,
-                  backgroundColor: "#353542",
-                },
-              ]}
-            >
-              <Image source={require("../assets/YTPremiumLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>YouTube Premium</Text>
-              <Text style={styles.subscriptionText2}>$18.99</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Info");
-            }}
-          >
-            <View
-              style={[
-                styles.subscriptionBox,
-                {
-                  flexDirection: "row",
-                  marginTop: 10,
-                  backgroundColor: "#353542",
-                },
-              ]}
-            >
-              <Image source={require("../assets/OneDriveLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>Microsoft OneDrive</Text>
-              <Text style={styles.subscriptionText2}>$29.99</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Info");
-            }}
-          >
-            <View
-              style={[
-                styles.subscriptionBox,
-                {
-                  flexDirection: "row",
-                  marginTop: 10,
-                  backgroundColor: "#353542",
-                },
-              ]}
-            >
-              <Image source={require("../assets/NetflixLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>Netflix</Text>
-              <Text style={styles.subscriptionText2}>$37.99</Text>
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -239,6 +213,7 @@ const styles = StyleSheet.create({
   },
   circleBG: {
     position: "absolute",
+    top: 0,
     width: 426,
     height: 488,
     borderRadius: 20,
@@ -340,3 +315,137 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
 });
+
+/* 
+<ScrollView horizontal={false}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Info");
+                }}
+              >
+                <View
+                  style={[
+                    styles.subscriptionBox,
+                    {
+                      flexDirection: "row",
+                      marginTop: 15,
+                      backgroundColor: "#353542",
+                    },
+                  ]}
+                >
+                  <Image source={require("../assets/SpotifyLogo.png")}></Image>
+                  <Text style={styles.subscriptionText1}>Spotify</Text>
+                  <Text style={styles.subscriptionText2}>$5.99</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Info");
+                }}
+              >
+                <View
+                  style={[
+                    styles.subscriptionBox,
+                    {
+                      flexDirection: "row",
+                      marginTop: 10,
+                      backgroundColor: "#353542",
+                    },
+                  ]}
+                >
+                  <Image
+                    source={require("../assets/YTPremiumLogo.png")}
+                  ></Image>
+                  <Text style={styles.subscriptionText1}>YouTube Premium</Text>
+                  <Text style={styles.subscriptionText2}>$18.99</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Info");
+                }}
+              >
+                <View
+                  style={[
+                    styles.subscriptionBox,
+                    {
+                      flexDirection: "row",
+                      marginTop: 10,
+                      backgroundColor: "#353542",
+                    },
+                  ]}
+                >
+                  <Image source={require("../assets/OneDriveLogo.png")}></Image>
+                  <Text style={styles.subscriptionText1}>
+                    Microsoft OneDrive
+                  </Text>
+                  <Text style={styles.subscriptionText2}>$29.99</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Info");
+                }}
+              >
+                <View
+                  style={[
+                    styles.subscriptionBox,
+                    {
+                      flexDirection: "row",
+                      marginTop: 10,
+                      backgroundColor: "#353542",
+                    },
+                  ]}
+                >
+                  <Image source={require("../assets/NetflixLogo.png")}></Image>
+                  <Text style={styles.subscriptionText1}>Netflix</Text>
+                  <Text style={styles.subscriptionText2}>$37.99</Text>
+                </View>
+              </TouchableOpacity>
+            </ScrollView>
+
+
+
+
+useEffect(() => {
+    (async () => {
+      try {
+        subscription.forEach((subscription) => {
+          const foundImage = images.find(
+            (image) => image.text === subscription.subName
+          );
+          console.log(foundImage);
+          if (foundImage) {
+            updateSubscription.push({ ...subscription, image: foundImage.src });
+          }
+        });
+
+        console.log("images", updateSubscription);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [subscription, images]); */
+
+/*  {updateSubscription.map((item, i) => ( 
+      <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Info");
+            }}
+          >
+            <View
+              style={[
+                styles.subscriptionBox,
+                {
+                  flexDirection: "row",
+                  marginTop: 15,
+                  backgroundColor: "#353542",
+                },
+              ]}
+            >
+              <Image source={require({item.image}}></Image>
+              <Text style={styles.subscriptionText1}>{item.subName}</Text>
+              <Text style={styles.subscriptionText2}>${item.cost}</Text>
+            </View>
+          </TouchableOpacity>
+          ))}*/
