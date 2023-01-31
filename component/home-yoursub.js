@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import {
-  Alert,
   SafeAreaView,
   View,
   Text,
@@ -8,7 +7,6 @@ import {
   StyleSheet,
   StatusBar,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 
 // ico
@@ -18,7 +16,7 @@ import AppLogo from "./AppLogo";
 import CircularProgressBar from "./circularProgressLine";
 import { firebaseapp, db } from "../firebase";
 import { doc, collection, addDoc, getDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import Loading from "./Loading";
 import { FlatList } from "react-native-gesture-handler";
 
@@ -39,7 +37,7 @@ export default HomeYourSub = ({ navigation }) => {
     "YouTube Premium": require("../assets/YTPremiumLogo.png"),
     "Microsoft Onedrive": require("../assets/OneDriveLogo.png"),
     Netflix: require("../assets/NetflixLogo.png"),
-    "HBO Go": require("../assets/HBOGOLogo.png"),
+    "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
 
   const getUserData = async () => {
@@ -49,6 +47,7 @@ export default HomeYourSub = ({ navigation }) => {
 
       if (docSnap.exists()) {
         setSubscription(docSnap.data().subscriptions);
+        console.log(subscription);
         setLoading(false);
       } else {
         // doc.data() will be undefined in this case
@@ -132,15 +131,21 @@ export default HomeYourSub = ({ navigation }) => {
             <View style={{ flexDirection: "row" }}>
               <View style={styles.box}>
                 <Text style={{ color: "#fff" }}>Active Subs</Text>
-                <Text style={styles.textInsideBox}>{subscription?.length}</Text>
+                <Text style={styles.textInsideBox}>
+                  {totalCost == 0 ? 0 : subscription.length}
+                </Text>
               </View>
               <View style={styles.box}>
                 <Text style={{ color: "#fff" }}>Highest Subs</Text>
-                <Text style={styles.textInsideBox}>${highest}</Text>
+                <Text style={styles.textInsideBox}>
+                  ${totalCost == 0 ? 0 : highest}
+                </Text>
               </View>
               <View style={styles.box}>
                 <Text style={{ color: "#fff" }}>Lowest Subs</Text>
-                <Text style={styles.textInsideBox}>${lowest}</Text>
+                <Text style={styles.textInsideBox}>
+                  ${totalCost == 0 ? 0 : lowest}
+                </Text>
               </View>
             </View>
             <View
@@ -172,35 +177,39 @@ export default HomeYourSub = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <FlatList
-              data={subscription}
-              renderItem={({ item }) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate("Info");
-                    }}
-                  >
-                    <View
-                      style={[
-                        styles.subscriptionBox,
-                        {
-                          flexDirection: "row",
-                          marginTop: 15,
-                          backgroundColor: "#353542",
-                        },
-                      ]}
+            {totalCost == 0 ? null : (
+              <FlatList
+                data={subscription}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate("Info");
+                      }}
                     >
-                      <Image source={imageMapping[item.subName]}></Image>
-                      <Text style={styles.subscriptionText1}>
-                        {item.subName}
-                      </Text>
-                      <Text style={styles.subscriptionText2}>${item.cost}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+                      <View
+                        style={[
+                          styles.subscriptionBox,
+                          {
+                            flexDirection: "row",
+                            marginTop: 15,
+                            backgroundColor: "#353542",
+                          },
+                        ]}
+                      >
+                        <Image source={imageMapping[item.subName]}></Image>
+                        <Text style={styles.subscriptionText1}>
+                          {item.subName}
+                        </Text>
+                        <Text style={styles.subscriptionText2}>
+                          ${item.cost}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            )}
           </View>
         </View>
       )}
@@ -316,8 +325,11 @@ const styles = StyleSheet.create({
   subscriptionText2: {
     fontWeight: "bold",
     color: "white",
-    marginLeft: 5,
+    marginRight: 5,
     textAlign: "right",
+    alignItems: "right",
+    justifyContent: "center",
+    width: "16%",
   },
 });
 

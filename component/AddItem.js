@@ -15,13 +15,15 @@ import {
 
 import { UserContext } from "./UserContext";
 import { firebaseapp, db } from "../firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDoc,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import Loading from "./Loading";
 
 const auth = getAuth(firebaseapp);
 
@@ -62,173 +64,204 @@ const images = [
 export default AddItem = ({ navigation }) => {
   const { user } = useContext(UserContext);
 
+  const [subscription, setSubscription] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [subName, setSubName] = useState("");
   const [cost, setCost] = useState(0);
   const [description, setDescripton] = useState("");
 
-  const [scrollOffset, setScrollOffset] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
+  const getUserData = async () => {
+    try {
+      const docRef = doc(db, "userData", user.uid);
+      const docSnap = await getDoc(docRef);
 
-  
+      if (docSnap.exists()) {
+        setSubscription(docSnap.data().subscriptions);
+        console.log(subscription);
+        setLoading(false);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getUserData();
+  }, [user]);
+
   const handleScroll = (event) => {
-    selectedIndex = Math.round(event.nativeEvent.contentOffset.x / 450);
+    setSelectedIndex(Math.round(event.nativeEvent.contentOffset.x / width));
+
     console.log(selectedIndex);
   };
-  let selectedIndex;
 
   const onHandleAdd = async () => {
+    console.log(images[selectedIndex].text);
     if (selectedIndex >= 0 && selectedIndex < images.length) {
       setSubName(images[selectedIndex].text);
     } else {
       setSubName("");
     }
     try {
+      console.log(subName);
+      console.log(cost);
       if (subName != "" && cost != 0) {
         const docRef = doc(db, "userData", user.uid);
         await updateDoc(docRef, {
-          subscription: {
-            cost: arrayUnion(cost.replace("$", "")),
-            subName: arrayUnion(subName),
-            description: arrayUnion(description), 
-          },
+          subscriptions: arrayUnion(...subscription, {
+            cost: cost.replace("$", ""),
+            description: description,
+            subName: subName,
+          }),
         });
         Alert.alert("New Subscription Added");
       }
     } catch (error) {
-      alert(error.message);
+      Alert.alert(error.message);
     }
     navigation.navigate("BottomBar");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.lightBG}></View>
-      <View>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>New</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.iconContainer}
-          onPress={() =>
-            navigation.navigate("Home", { screen: "HomeScreenYourSub" })
-          }
-        >
-          <Ionicons
-            style={styles.icon}
-            name="chevron-back-outline"
-            size="30"
-            color="#A2A2B5"
-          />
-        </TouchableOpacity>
-        <View style={{ marginTop: 50, alignItems: "center" }}>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.subHeader}>Add New Subscripton</Text>
-          </View>
-          <ScrollView
-            horizontal={true}
-            pagingEnabled={true}
-            snapToAlignment="center"
-            onScroll={handleScroll}
-          >
-            <View style={{ flexDirection: "row" }}>
-              {images.map((image, i) => (
-                <View
-                  selectedIndex={i}
-                  key={i}
-                  style={{
-                    alignItems: "center",
-                    width: width,
-                    padding: 10,
-                  }}
-                >
-                  <Image
-                    source={image.src}
-                    style={{
-                      width: 150,
-                      height: 150,
-                      borderRadius: 40,
-                    }}
-                  />
-                  <Text style={styles.bill}>{image.text}</Text>
+      {loading ? (
+        <Loading />
+      ) : (
+        <View>
+          <View style={styles.lightBG}></View>
+          <View>
+            <View style={styles.header}>
+              <Text style={styles.headerText}>New</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() =>
+                navigation.navigate("Home", { screen: "HomeScreenYourSub" })
+              }
+            >
+              <Ionicons
+                style={styles.icon}
+                name="chevron-back-outline"
+                size="30"
+                color="#A2A2B5"
+              />
+            </TouchableOpacity>
+            <View style={{ marginTop: 50, alignItems: "center" }}>
+              <View style={{ alignItems: "center" }}>
+                <Text style={styles.subHeader}>Add New Subscripton</Text>
+              </View>
+              <ScrollView
+                horizontal={true}
+                pagingEnabled={true}
+                snapToAlignment="center"
+                onMomentumScrollEnd={handleScroll}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  {images.map((image, i) => (
+                    <View
+                      selectedIndex={i}
+                      key={i}
+                      style={{
+                        alignItems: "center",
+                        width: width,
+                        padding: 10,
+                      }}
+                    >
+                      <Image
+                        source={image.src}
+                        style={{
+                          width: 150,
+                          height: 150,
+                          borderRadius: 40,
+                        }}
+                      />
+                      <Text style={styles.bill}>{image.text}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
+              </ScrollView>
             </View>
-          </ScrollView>
-        </View>
 
-        <View style={styles.inputitems}>
-          <Text style={styles.subhead}>Description</Text>
-          <TextInput
-            style={styles.input}
-            underlineColorAndroid="transparent"
-            placeholder={""}
-            placeholderTextColor="black"
-            autoCapitalize="none"
-            value={description}
-            onChangeText={(text) => setDescripton(text)}
-          />
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 50,
-          }}
-        >
-          <TouchableOpacity>
-            <View style={styles.box}>
-              <Ionicons name="remove-outline" size="40" />
+            <View style={styles.inputitems}>
+              <Text style={styles.subhead}>Description</Text>
+              <TextInput
+                style={styles.input}
+                underlineColorAndroid="transparent"
+                placeholder={""}
+                placeholderTextColor="black"
+                autoCapitalize="none"
+                value={description}
+                onChangeText={(text) => setDescripton(text)}
+              />
             </View>
-          </TouchableOpacity>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              width: "50%",
-            }}
-          >
-            <Text style={{ color: "#666680", fontWeight: "bold" }}>
-              Monthly Price
-            </Text>
-            <TextInput
+
+            <View
               style={{
-                borderRadius: 10,
-                fontWeight: "bold",
-                fontSize: 20,
-                width: "85%",
-                height: 60,
-                borderBottomColor: "#353542",
-                borderBottomWidth: 1,
-                color: "white",
-                textAlign: "center",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 50,
               }}
-              underlineColorAndroid="transparent"
-              placeholder={"$0"}
-              textAlign="center"
-              placeholderTextColor="white"
-              autoCapitalize="none"
-              value={cost}
-              onChangeText={(text) => setCost(text)}
-            />
-          </View>
-          <TouchableOpacity>
-            <View style={styles.box}>
-              <Ionicons name="add-outline" size="40" />
+            >
+              <TouchableOpacity>
+                <View style={styles.box}>
+                  <Ionicons name="remove-outline" size="40" />
+                </View>
+              </TouchableOpacity>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "50%",
+                }}
+              >
+                <Text style={{ color: "#666680", fontWeight: "bold" }}>
+                  Monthly Price
+                </Text>
+                <TextInput
+                  style={{
+                    borderRadius: 10,
+                    fontWeight: "bold",
+                    fontSize: 20,
+                    width: "85%",
+                    height: 60,
+                    borderBottomColor: "#353542",
+                    borderBottomWidth: 1,
+                    color: "white",
+                    textAlign: "center",
+                  }}
+                  underlineColorAndroid="transparent"
+                  placeholder={"$0"}
+                  textAlign="center"
+                  placeholderTextColor="white"
+                  autoCapitalize="none"
+                  value={cost}
+                  onChangeText={(text) => setCost(text)}
+                />
+              </View>
+              <TouchableOpacity>
+                <View style={styles.box}>
+                  <Ionicons name="add-outline" size="40" />
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+            <View style={{ alignItems: "center", marginTop: 90 }}>
+              <CustomButton
+                text="Add Subscription"
+                color="white"
+                backgroundColor="red"
+                marginBottom={25}
+                onPress={onHandleAdd}
+              ></CustomButton>
+            </View>
+          </View>
         </View>
-        <View style={{ alignItems: "center", marginTop: 90 }}>
-          <CustomButton
-            text="Add Subscription"
-            color="white"
-            backgroundColor="red"
-            marginBottom={25}
-            onPress={onHandleAdd}
-          ></CustomButton>
-        </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 };
