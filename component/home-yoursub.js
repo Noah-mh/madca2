@@ -29,6 +29,9 @@ export default HomeYourSub = ({ navigation }) => {
 
   const [subscription, setSubscription] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
+  const [highest, setHighest] = useState(0);
+  const [lowest, setLowest] = useState(0);
+
   const [loading, setLoading] = useState(true);
 
   const imageMapping = {
@@ -45,11 +48,8 @@ export default HomeYourSub = ({ navigation }) => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        console.log(docSnap.data());
         setSubscription(docSnap.data().subscriptions);
-
         setLoading(false);
-        console.log("subscription :", subscription);
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
@@ -70,7 +70,12 @@ export default HomeYourSub = ({ navigation }) => {
       return total + parseFloat(subscription.cost);
     }, 0);
     setTotalCost(calculateTotal);
-    console.log("subscription :", totalCost);
+
+    const costs = subscription.map((item) => parseFloat(item.cost));
+    const maxCost = Math.max(...costs);
+    setHighest(maxCost);
+    const minCost = Math.min(...costs);
+    setLowest(minCost);
   }, [subscription]);
 
   return (
@@ -94,8 +99,8 @@ export default HomeYourSub = ({ navigation }) => {
             <View style={{ position: "absolute", top: 40, left: 65 }}>
               <CircularProgressBar
                 size={300}
-                value={65}
-                degree={"-98deg"}
+                value={75}
+                degree={"-135deg"}
                 color={"#fff"}
                 zIndex={-1}
               />
@@ -131,11 +136,11 @@ export default HomeYourSub = ({ navigation }) => {
               </View>
               <View style={styles.box}>
                 <Text style={{ color: "#fff" }}>Highest Subs</Text>
-                <Text style={styles.textInsideBox}>${totalCost}</Text>
+                <Text style={styles.textInsideBox}>${highest}</Text>
               </View>
               <View style={styles.box}>
                 <Text style={{ color: "#fff" }}>Lowest Subs</Text>
-                <Text style={styles.textInsideBox}>$5.99</Text>
+                <Text style={styles.textInsideBox}>${lowest}</Text>
               </View>
             </View>
             <View
