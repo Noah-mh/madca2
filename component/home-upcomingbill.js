@@ -3,11 +3,12 @@ import {
   SafeAreaView,
   View,
   Text,
-  Image,
   StyleSheet,
   StatusBar,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
+
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
@@ -17,7 +18,6 @@ import { firebaseapp, db } from "../firebase";
 import { doc, collection, addDoc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Loading from "./Loading";
-import { FlatList } from "react-native-gesture-handler";
 
 const auth = getAuth();
 
@@ -31,14 +31,6 @@ export default HomeUpcomingBill = ({ navigation }) => {
 
   const [loading, setLoading] = useState(true);
 
-  const imageMapping = {
-    Spotify: require("../assets/SpotifyLogo.png"),
-    "YouTube Premium": require("../assets/YTPremiumLogo.png"),
-    "Microsoft Onedrive": require("../assets/OneDriveLogo.png"),
-    Netflix: require("../assets/NetflixLogo.png"),
-    "HBO Go": require("../assets/HBOGOsmallLogo.png"),
-  };
-
   const getUserData = async () => {
     try {
       const docRef = doc(db, "userData", user.uid);
@@ -46,7 +38,7 @@ export default HomeUpcomingBill = ({ navigation }) => {
 
       if (docSnap.exists()) {
         setSubscription(docSnap.data().subscriptions);
-        console.log("Subscription", subscription);
+        // console.log("Subscription", subscription);
         setLoading(false);
       } else {
         // doc.data() will be undefined in this case
@@ -58,7 +50,7 @@ export default HomeUpcomingBill = ({ navigation }) => {
   };
   useEffect(() => {
     getUserData();
-  }, [user]);
+  }, [user,subscription]);
 
   useEffect(() => {
     if (!subscription) {
@@ -67,7 +59,7 @@ export default HomeUpcomingBill = ({ navigation }) => {
     const calculateTotal = subscription.reduce((total, subscription) => {
       return total + parseFloat(subscription.cost);
     }, 0);
-    setTotalCost(calculateTotal);
+    setTotalCost(calculateTotal.toFixed(2));
 
     const costs = subscription.map((item) => parseFloat(item.cost));
     const maxCost = Math.max(...costs);

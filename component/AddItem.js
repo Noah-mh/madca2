@@ -31,36 +31,6 @@ const auth = getAuth(firebaseapp);
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "./CustomButton";
-import image1 from "../assets/SpotifyBiggerLogo.png";
-import image2 from "../assets/HBOGOLogo.png";
-import image3 from "../assets/OneDriveBiggerLogo.png";
-import image4 from "../assets/NetflixBiggerLogo.jpeg";
-import image5 from "../assets/YTPremiumBiggerLogo.jpg";
-
-const width = Dimensions.get("window").width;
-
-const images = [
-  {
-    src: image1,
-    text: "Spotify",
-  },
-  {
-    src: image2,
-    text: "HBO Go",
-  },
-  {
-    src: image3,
-    text: "Microsoft One Drive",
-  },
-  {
-    src: image4,
-    text: "Netflix",
-  },
-  {
-    src: image5,
-    text: "YouTube Premium",
-  },
-];
 
 export default AddItem = ({ navigation }) => {
   const { user } = useContext(UserContext);
@@ -72,6 +42,7 @@ export default AddItem = ({ navigation }) => {
   const [subName, setSubName] = useState("");
   const [cost, setCost] = useState(0);
   const [description, setDescripton] = useState("");
+  const [category, setCategory] = useState("");
 
   const [items, setItems] = useState([]);
 
@@ -100,9 +71,11 @@ export default AddItem = ({ navigation }) => {
     // console.log("viewable items in additem.js:", viewableItems);
   };
   useEffect(() => {
-    // console.log("Viewable items: ", items);
-    setSubName(items[0].item.title);
-    // console.log(subName);
+    console.log("Viewable items: ", items);
+    if (items.length != 0) {
+      setSubName(items[0].item.title);
+    }
+    console.log(subName);
   }, [items]);
 
   const onHandleAdd = async () => {
@@ -115,6 +88,7 @@ export default AddItem = ({ navigation }) => {
           subscriptions: arrayUnion(...subscription, {
             cost: cost.replace("$", ""),
             description: description,
+            category: category,
             subName: subName,
           }),
         });
@@ -153,7 +127,9 @@ export default AddItem = ({ navigation }) => {
               <Text style={styles.subHeader}>Add New Subscripton</Text>
             </View>
           </View>
+
           <Slider onViewableItemsChanged={handleViewableItemsChanged} />
+ 
           <View style={styles.inputitems}>
             <Text style={styles.subhead}>Description</Text>
             <TextInput
@@ -164,6 +140,18 @@ export default AddItem = ({ navigation }) => {
               autoCapitalize="none"
               value={description}
               onChangeText={(text) => setDescripton(text)}
+            />
+          </View>
+          <View style={styles.inputitems}>
+            <Text style={styles.subhead}>Category</Text>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              placeholder={""}
+              placeholderTextColor="black"
+              autoCapitalize="none"
+              value={category}
+              onChangeText={(text) => setCategory(text)}
             />
           </View>
 
@@ -252,13 +240,14 @@ const styles = StyleSheet.create({
   },
 
   inputitems: {
-    marginTop: 20,
+    marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
   },
   subhead: {
     color: "#666680",
     fontWeight: "bold",
+    fontSize:16
   },
 
   input: {

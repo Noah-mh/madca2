@@ -7,6 +7,7 @@ import {
   StyleSheet,
   StatusBar,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 
 // ico
@@ -18,7 +19,6 @@ import { firebaseapp, db } from "../firebase";
 import { doc, collection, addDoc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Loading from "./Loading";
-import { FlatList } from "react-native-gesture-handler";
 
 const auth = getAuth();
 
@@ -35,7 +35,7 @@ export default HomeYourSub = ({ navigation }) => {
   const imageMapping = {
     Spotify: require("../assets/SpotifyLogo.png"),
     "YouTube Premium": require("../assets/YTPremiumLogo.png"),
-    "Microsoft Onedrive": require("../assets/OneDriveLogo.png"),
+    "Microsoft One Drive": require("../assets/OneDriveLogo.png"),
     Netflix: require("../assets/NetflixLogo.png"),
     "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
@@ -47,7 +47,7 @@ export default HomeYourSub = ({ navigation }) => {
 
       if (docSnap.exists()) {
         setSubscription(docSnap.data().subscriptions);
-        console.log(subscription);
+        // console.log(subscription);
         setLoading(false);
       } else {
         // doc.data() will be undefined in this case
@@ -59,7 +59,7 @@ export default HomeYourSub = ({ navigation }) => {
   };
   useEffect(() => {
     getUserData();
-  }, [user]);
+  }, [user,subscription]);
 
   useEffect(() => {
     if (!subscription) {
@@ -68,7 +68,7 @@ export default HomeYourSub = ({ navigation }) => {
     const calculateTotal = subscription.reduce((total, subscription) => {
       return total + parseFloat(subscription.cost);
     }, 0);
-    setTotalCost(calculateTotal);
+    setTotalCost(calculateTotal.toFixed(2));
 
     const costs = subscription.map((item) => parseFloat(item.cost));
     const maxCost = Math.max(...costs);
@@ -178,37 +178,39 @@ export default HomeYourSub = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             {totalCost == 0 ? null : (
-              <FlatList
-                data={subscription}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate("Info");
-                      }}
-                    >
-                      <View
-                        style={[
-                          styles.subscriptionBox,
-                          {
-                            flexDirection: "row",
-                            marginTop: 15,
-                            backgroundColor: "#353542",
-                          },
-                        ]}
+              <View>
+                <FlatList
+                  data={subscription}
+                  renderItem={({ item }) => {
+                    return (
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.navigate("Info", { item: item });
+                        }}
                       >
-                        <Image source={imageMapping[item.subName]}></Image>
-                        <Text style={styles.subscriptionText1}>
-                          {item.subName}
-                        </Text>
-                        <Text style={styles.subscriptionText2}>
-                          ${item.cost}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
+                        <View
+                          style={[
+                            styles.subscriptionBox,
+                            {
+                              flexDirection: "row",
+                              marginTop: 15,
+                              backgroundColor: "#353542",
+                            },
+                          ]}
+                        >
+                          <Image source={imageMapping[item.subName]}></Image>
+                          <Text style={styles.subscriptionText1}>
+                            {item.subName}
+                          </Text>
+                          <Text style={styles.subscriptionText2}>
+                            ${item.cost}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+              </View>
             )}
           </View>
         </View>

@@ -2,53 +2,56 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "./UserContext";
 import {
   SafeAreaView,
-  ScrollView,
   View,
   Text,
   Image,
   StyleSheet,
   StatusBar,
   TouchableOpacity,
-  Dimensions,
-  TextInput,
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import { firebaseapp, db } from "../firebase";
-import { collection, doc, updateDoc, getDoc } from "firebase/firestore";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  updateEmail,
-  updatePassword,
-} from "firebase/auth";
+  collection,
+  doc,
+  updateDoc,
+  getDoc,
+  arrayRemove,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import CustomButton from "./CustomButton";
 
 const auth = getAuth(firebaseapp);
 
-export default SubInfo = ({ navigation }) => {
+export default SubInfo = ({ navigation, route }) => {
+  const { item } = route.params;
+  const { user } = useContext(UserContext);
+  const imageMapping = {
+    Spotify: require("../assets/SpotifyBiggerLogo.png"),
+    "YouTube Premium": require("../assets/YTPremiumBiggerLogo.jpg"),
+    "Microsoft One Drive": require("../assets/OneDriveBiggerLogo.png"),
+    Netflix: require("../assets/NetflixBiggerLogo.jpeg"),
+    "HBO Go": require("../assets/HBOGOLogo.png"),
+  };
 
-    const { user } = useContext(UserContext);
-  const [data, setData] = useState("");
-
-  useEffect(() => {
-    (async () => {
+  const onHandleDelete = async () => {
+    try {
       const docRef = doc(db, "userData", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
-        setData(docSnap.data());
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    })();
-  }, [user]);
-
-
-
+      await updateDoc(docRef, {
+        subscriptions: arrayRemove({
+          cost: item.cost,
+          description: item.description,
+          // category: item.category,
+          subName: item.subName,
+        }),
+      });
+      alert("Subscription Successfully Deleted");
+    } catch (error) {
+      alert(error.message);
+    }
+    navigation.navigate("BottomBar");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,7 +70,7 @@ export default SubInfo = ({ navigation }) => {
             color="#A2A2B5"
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.doneContainer} onPress={() => {}}>
+        <TouchableOpacity style={styles.doneContainer} onPress={onHandleDelete}>
           <Ionicons
             style={styles.icon}
             name="trash-outline"
@@ -80,11 +83,11 @@ export default SubInfo = ({ navigation }) => {
           <View style={{ alignItems: "center" }}>
             <Image
               style={{ width: 120, height: 120, borderRadius: 10 }}
-              source={require("../assets/NetflixBiggerLogo.jpeg")}
+              source={imageMapping[item.subName]}
             ></Image>
 
-            <Text style={styles.bill}>Netflix</Text>
-            <Text style={styles.bill}>$37.99</Text>
+            <Text style={styles.bill}> {item.subName}</Text>
+            <Text style={styles.bill}> ${item.cost}</Text>
           </View>
         </View>
         <View style={styles.line}></View>
@@ -103,7 +106,7 @@ export default SubInfo = ({ navigation }) => {
                 style={{
                   alignItems: "left",
                   justifyContent: "center",
-                  width: "80%",
+                  width: "70%",
                 }}
               >
                 <Text style={styles.categoryText1}>Name</Text>
@@ -112,19 +115,18 @@ export default SubInfo = ({ navigation }) => {
                 style={{
                   alignItems: "right",
                   justifyContent: "center",
-                  width: "20%",
+                  width: "30%",
                 }}
               >
-                <Text style={styles.categoryText2}>Date</Text>
+                <Text style={styles.categoryText2}>{item.subName}</Text>
               </View>
             </TouchableOpacity>
-
             <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
               <View
                 style={{
                   alignItems: "left",
                   justifyContent: "center",
-                  width: "80%",
+                  width: "70%",
                 }}
               >
                 <Text style={styles.categoryText1}>Description</Text>
@@ -133,10 +135,10 @@ export default SubInfo = ({ navigation }) => {
                 style={{
                   alignItems: "right",
                   justifyContent: "center",
-                  width: "20%",
+                  width: "30%",
                 }}
               >
-                <Text style={styles.categoryText2}>Average</Text>
+                <Text style={styles.categoryText2}>{item.description}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
@@ -156,7 +158,7 @@ export default SubInfo = ({ navigation }) => {
                   width: "30%",
                 }}
               >
-                <Text style={styles.categoryText2}>Enterteinment</Text>
+                <Text style={styles.categoryText2}>{item.category}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
@@ -203,14 +205,14 @@ export default SubInfo = ({ navigation }) => {
         </View>
         <View style={styles.line}></View>
         <View style={{ padding: 20, alignItems: "center" }}>
-              <CustomButton
-                text="Close"
-                color="white"
-                backgroundColor="#A2A2B5"
-                marginTop={50}
-                onPress={() => navigation.navigate("BottomBar")}
-              ></CustomButton>
-            </View>
+          <CustomButton
+            text="Close"
+            color="white"
+            backgroundColor="#A2A2B5"
+            marginTop={50}
+            onPress={() => navigation.navigate("BottomBar")}
+          ></CustomButton>
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -14,29 +14,12 @@ import { FlatList } from "react-native-gesture-handler";
 const { width } = Dimensions.get("screen");
 
 const SlideItem = ({ item }) => {
-  const translateYImage = new Animated.Value(40);
-  Animated.timing(translateYImage, {
-    toValue: 0,
-    duration: 1000,
-    useNativeDriver: true,
-    easing: Easing.bounce,
-  }).start();
-
   return (
     <View style={styles.container}>
       <Animated.Image
         source={item.img}
         resizeMode="contain"
-        style={[
-          styles.image,
-          {
-            transform: [
-              {
-                translateY: translateYImage,
-              },
-            ],
-          },
-        ]}
+        style={styles.image}
       />
 
       <View style={styles.content}>
@@ -58,8 +41,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 40,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
   },
   content: {
     alignItems: "center",
