@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext, useState, useEffect } from "react";
+
 import {
   Alert,
   SafeAreaView,
@@ -10,11 +11,105 @@ import {
   ScrollView,
 } from 'react-native';
 // ico
-import { Ionicons } from '@expo/vector-icons';
-import CircularProgressBar from './circularProgressLine';
-import ProgressLine from './progressLine';
+import { Ionicons } from "@expo/vector-icons";
+import { UserContext } from "./UserContext";
+
+import CircularProgressBar from "./circularProgressLine";
+import ProgressLine from "./progressLine";
+import { firebaseapp, db } from "../firebase";
+import { doc, collection, addDoc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import Loading from "./Loading";
+
+const DropDown = ({ setMonth, months }) => {
+  const [showDropDown, setShowDropDown] = useState(false);
+  const [month, setSelectedMonth] = useState(months[0]);
+
+  return (
+    <View style={{ position: 'absolute' }}>
+      <TouchableOpacity
+        style={styles.monthButton}
+        onPress={() => setShowDropDown(!showDropDown)}>
+        <Text
+          style={{
+            fontWeight: 'bold',
+            color: 'white',
+            marginRight: 3,
+            width: '80%',
+          }}>
+          {month}
+        </Text>
+        <Ionicons name="chevron-down" color="white" size="20" />
+      </TouchableOpacity>
+      {showDropDown && (
+        <View>
+          {months.map((month, index) => (
+            <TouchableOpacity
+              style={styles.monthButton}
+              key={index}
+              onPress={() => {
+                setSelectedMonth(month);
+                setMonth(month);
+                setShowDropDown(false);
+              }}>
+              <Text
+                style={{ fontWeight: 'bold', color: 'white', marginRight: 3 }}>
+                {month}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+};
+
 
 export default Budget = ({ navigation }) => {
+  const { user } = useContext(UserContext);
+
+  const [subscription, setSubscription] = useState([]);
+  const [totalCost, setTotalCost] = useState(0);
+  const [highest, setHighest] = useState(0);
+  const [lowest, setLowest] = useState(0);
+
+  const [loading, setLoading] = useState(true);
+
+  const getUserData = async () => {
+    try {
+      const docRef = doc(db, "userData", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setSubscription(docSnap.data().subscriptions);
+        // console.log(subscription);
+        setLoading(false);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getUserData();
+  }, [user,subscription]);
+  useEffect(() => {
+    if (!subscription) {
+      return;
+    }
+    const calculateTotal = subscription.reduce((total, subscription) => {
+      return total + parseFloat(subscription.cost);
+    }, 0);
+    setTotalCost(calculateTotal.toFixed(2));
+
+    const costs = subscription.map((item) => parseFloat(item.cost));
+    const maxCost = Math.max(...costs);
+    setHighest(maxCost);
+    const minCost = Math.min(...costs);
+    setLowest(minCost);
+  }, [subscription]);
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -64,7 +159,7 @@ export default Budget = ({ navigation }) => {
         </View>
         <View style={{ marginTop: 100, alignItems: 'center' }}>
           <View style={{ alignItems: 'center' }}>
-            <Text style={styles.bill}>$409.97</Text>
+            <Text style={styles.bill}>${totalCost}</Text>
             <Text style={styles.billtext}>of $1500 budget</Text>
           </View>
 
