@@ -19,7 +19,7 @@ import { doc, setDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
+
 } from "firebase/auth";
 
 const auth = getAuth(firebaseapp);
@@ -55,7 +55,7 @@ export default RegisterScreen2 = ({ navigation }) => {
           setDoc(doc(db, "userData", userinfo.uid), {
             username: username,
             subscriptions: [],
-            budget: "2000"
+            budget: "500"
           });
           navigation.navigate("BottomBar");
         })

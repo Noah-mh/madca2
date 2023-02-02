@@ -42,19 +42,28 @@ export default HomeYourSub = ({ navigation }) => {
   const getUserData = async () => {
     try {
       const docRef = doc(db, "userData", user.uid);
-      onSnapshot(docRef, (doc) => {
-        console.log("Current data: ", doc.data());
-        setData(doc.data());
-        setSubscription(doc.data().subscriptions);
-     
-        setLoading(false);
-      });
+      onSnapshot(
+        docRef,
+        (doc) => {
+          console.log("Current data: ", doc.data());
+          setData(doc.data());
+          if (data != null) {
+            setSubscription(doc.data().subscriptions);
+          }
+
+          setLoading(false);
+        },
+        (error) => {
+          console.log("Error: in onSnapShot ", error);
+        }
+      );
     } catch (error) {
-      console.log(error);
+      console.log("yoursub", error);
     }
   };
   useEffect(() => {
     getUserData();
+    // setSubscription(data.subscriptions);
   }, [user]);
 
   useEffect(() => {

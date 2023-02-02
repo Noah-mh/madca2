@@ -40,7 +40,7 @@ export default EditProfile = ({ navigation }) => {
       // console.log("Document data:", data);
       setUsename(data.username);
     } catch (error) {
-      console.log("Error getting document:", error);
+      console.log("Error getting document in edit profile:", error);
     }
   };
   useEffect(() => {
@@ -85,7 +85,7 @@ export default EditProfile = ({ navigation }) => {
         navigation.navigate("Setting");
       }
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.log("Error adding document: in edit profile", e);
     }
   };
 

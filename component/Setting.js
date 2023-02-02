@@ -14,11 +14,13 @@ import {
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
+import { firebaseapp, db } from "../firebase";
+
 import { getAuth, signOut } from "firebase/auth";
 
 import CustomButton from "./CustomButton";
 import SwitchIcon from "./switch";
-const auth = getAuth();
+const auth = getAuth(firebaseapp);
 
 export default Setting = ({ navigation }) => {
   const { user, data } = useContext(UserContext);
@@ -29,7 +31,7 @@ export default Setting = ({ navigation }) => {
       // console.log("Document data:", data);
       setUsename(data.username);
     } catch (error) {
-      console.log("Error getting document:", error);
+      console.log("Error getting document at setting:", error);
     }
   };
   useEffect(() => {
@@ -46,6 +48,7 @@ export default Setting = ({ navigation }) => {
       .catch((e) => {
         const errorMessage = error.message;
         alert(errorMessage);
+        console.log("Error in sign out:", errorMessage)
       });
   };
 
