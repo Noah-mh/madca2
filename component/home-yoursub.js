@@ -54,7 +54,7 @@ export default HomeYourSub = ({ navigation }) => {
           setLoading(false);
         },
         (error) => {
-          console.log("Error: in onSnapShot ", error);
+          console.log("onSnapShot :", error);
         }
       );
     } catch (error) {
