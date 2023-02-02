@@ -16,7 +16,7 @@ import { UserContext } from "./UserContext";
 import AppLogo from "./AppLogo";
 import CircularProgressBar from "./circularProgressLine";
 import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 import Loading from "./Loading";
 
@@ -27,6 +27,7 @@ export default HomeYourSub = ({ navigation }) => {
   const [totalCost, setTotalCost] = useState(0);
   const [highest, setHighest] = useState(0);
   const [lowest, setLowest] = useState(0);
+  const [costStrength, setCostStrength] = useState(0);
 
   const [loading, setLoading] = useState(true);
 
@@ -38,48 +39,22 @@ export default HomeYourSub = ({ navigation }) => {
     "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
 
-  // const getUserData = async () => {
-  //   try {
-  //     const docRef = doc(db, "userData", user.uid);
-  //     const docSnap = await getDoc(docRef);
-
-  //     if (docSnap.exists()) {
-  //       setData(docSnap.data());
-  //       setSubscription(data.subscriptions);
-  //       console.log(docSnap.data());
-  //       setLoading(false);
-  //     } else {
-  //       // doc.data() will be undefined in this case
-  //       console.log("No such document!");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-
   const getUserData = async () => {
     try {
       const docRef = doc(db, "userData", user.uid);
-      const docSnap = await getDoc(docRef);
-      return docSnap;
+      onSnapshot(docRef, (doc) => {
+        console.log("Current data: ", doc.data());
+        setData(doc.data());
+        setSubscription(doc.data().subscriptions);
+     
+        setLoading(false);
+      });
     } catch (error) {
       console.log(error);
     }
   };
-
   useEffect(() => {
-    getUserData().then((docSnap) => {
-      if (docSnap.exists()) {
-        setData(docSnap.data());
-        setSubscription(data.subscriptions);
-        console.log(docSnap.data());
-        setLoading(false);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    });
+    getUserData();
   }, [user]);
 
   useEffect(() => {
@@ -97,6 +72,18 @@ export default HomeYourSub = ({ navigation }) => {
     const minCost = Math.min(...costs);
     setLowest(minCost);
   }, [subscription]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const calculateCostStrength = (
+      (totalCost / parseFloat(data.budget)) *
+      75
+    ).toFixed(2);
+
+    setCostStrength(calculateCostStrength);
+  }, [totalCost]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -126,7 +113,7 @@ export default HomeYourSub = ({ navigation }) => {
               />
               <CircularProgressBar
                 size={300}
-                value={60}
+                value={totalCost == 0 ? 0 : costStrength}
                 degree={"-135deg"}
                 color={"#B21818"}
                 zIndex={1}
@@ -199,7 +186,7 @@ export default HomeYourSub = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             {totalCost == 0 ? null : (
-              <View style={{maxHeight:250}}>
+              <View style={{ maxHeight: 250 }}>
                 <FlatList
                   data={subscription}
                   renderItem={({ item }) => {
@@ -231,7 +218,6 @@ export default HomeYourSub = ({ navigation }) => {
                     );
                   }}
                 />
-                
               </View>
             )}
           </View>
@@ -356,137 +342,3 @@ const styles = StyleSheet.create({
     width: "16%",
   },
 });
-
-/* 
-<ScrollView horizontal={false}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Info");
-                }}
-              >
-                <View
-                  style={[
-                    styles.subscriptionBox,
-                    {
-                      flexDirection: "row",
-                      marginTop: 15,
-                      backgroundColor: "#353542",
-                    },
-                  ]}
-                >
-                  <Image source={require("../assets/SpotifyLogo.png")}></Image>
-                  <Text style={styles.subscriptionText1}>Spotify</Text>
-                  <Text style={styles.subscriptionText2}>$5.99</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Info");
-                }}
-              >
-                <View
-                  style={[
-                    styles.subscriptionBox,
-                    {
-                      flexDirection: "row",
-                      marginTop: 10,
-                      backgroundColor: "#353542",
-                    },
-                  ]}
-                >
-                  <Image
-                    source={require("../assets/YTPremiumLogo.png")}
-                  ></Image>
-                  <Text style={styles.subscriptionText1}>YouTube Premium</Text>
-                  <Text style={styles.subscriptionText2}>$18.99</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Info");
-                }}
-              >
-                <View
-                  style={[
-                    styles.subscriptionBox,
-                    {
-                      flexDirection: "row",
-                      marginTop: 10,
-                      backgroundColor: "#353542",
-                    },
-                  ]}
-                >
-                  <Image source={require("../assets/OneDriveLogo.png")}></Image>
-                  <Text style={styles.subscriptionText1}>
-                    Microsoft OneDrive
-                  </Text>
-                  <Text style={styles.subscriptionText2}>$29.99</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Info");
-                }}
-              >
-                <View
-                  style={[
-                    styles.subscriptionBox,
-                    {
-                      flexDirection: "row",
-                      marginTop: 10,
-                      backgroundColor: "#353542",
-                    },
-                  ]}
-                >
-                  <Image source={require("../assets/NetflixLogo.png")}></Image>
-                  <Text style={styles.subscriptionText1}>Netflix</Text>
-                  <Text style={styles.subscriptionText2}>$37.99</Text>
-                </View>
-              </TouchableOpacity>
-            </ScrollView>
-
-
-
-
-useEffect(() => {
-    (async () => {
-      try {
-        subscription.forEach((subscription) => {
-          const foundImage = images.find(
-            (image) => image.text === subscription.subName
-          );
-          console.log(foundImage);
-          if (foundImage) {
-            updateSubscription.push({ ...subscription, image: foundImage.src });
-          }
-        });
-
-        console.log("images", updateSubscription);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, [subscription, images]); */
-
-/*  {subscription.map((item, i) => ( 
-      <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Info");
-            }}
-          >
-            <View
-              style={[
-                styles.subscriptionBox,
-                {
-                  flexDirection: "row",
-                  marginTop: 15,
-                  backgroundColor: "#353542",
-                },
-              ]}
-            >
-              <Image source={imageMapping[item.subName]}></Image>
-              <Text style={styles.subscriptionText1}>{item.subName}</Text>
-              <Text style={styles.subscriptionText2}>${item.cost}</Text>
-            </View>
-          </TouchableOpacity>
-          ))}*/

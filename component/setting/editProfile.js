@@ -37,7 +37,7 @@ export default EditProfile = ({ navigation }) => {
 
   const getUserData = async () => {
     try {
-      console.log("Document data:", data);
+      // console.log("Document data:", data);
       setUsename(data.username);
     } catch (error) {
       console.log("Error getting document:", error);

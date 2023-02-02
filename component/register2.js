@@ -55,6 +55,7 @@ export default RegisterScreen2 = ({ navigation }) => {
           setDoc(doc(db, "userData", userinfo.uid), {
             username: username,
             subscriptions: [],
+            budget: "2000"
           });
           navigation.navigate("BottomBar");
         })

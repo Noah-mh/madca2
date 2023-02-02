@@ -19,40 +19,92 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  serverTimestamp,
 } from "firebase/firestore";
 
 import Loading from "./Loading";
 import Slider from "./sliderComponent/Slider";
 
-
-
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "./CustomButton";
 
+const DropDown = ({ setCategory, categorys }) => {
+  const [showDropDown, setShowDropDown] = useState(false);
+  const [category, setSelectedCategory] = useState("Select Category");
+
+  return (
+    <View>
+      <TouchableOpacity
+        style={styles.categoryButton1}
+        onPress={() => setShowDropDown(!showDropDown)}
+      >
+        <Text
+          style={{
+            fontWeight: "bold",
+            color: "white",
+            marginRight: 3,
+            width: "80%",
+          }}
+        >
+          {category}
+        </Text>
+        <Ionicons name="chevron-down" color="white" size="20" />
+      </TouchableOpacity>
+      {showDropDown && (
+        <View>
+          {categorys.map((category, index) => (
+            <TouchableOpacity
+              style={styles.categoryButton2}
+              key={index}
+              onPress={() => {
+                setSelectedCategory(category);
+                setCategory(category);
+                setShowDropDown(false);
+              }}
+            >
+              <Text
+                style={{ fontWeight: "bold", color: "white", marginRight: 3 }}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+};
+
 export default AddItem = ({ navigation }) => {
-  const { user, subscription, setSubscription } = useContext(UserContext);
+  const { user, data, subscription, setSubscription } = useContext(UserContext);
 
   const [loading, setLoading] = useState(true);
 
   const [subName, setSubName] = useState("");
   const [cost, setCost] = useState(0);
   const [description, setDescripton] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Select Category");
 
   const [items, setItems] = useState([]);
 
-  
+  const categoryData = [
+    "Transportation",
+    "Entertainment",
+    "Security",
+    "Education",
+  ];
+
   const handleViewableItemsChanged = (viewableItems) => {
     setItems(viewableItems);
     // console.log("viewable items in additem.js:", viewableItems);
   };
   useEffect(() => {
-    console.log("Viewable items: ", items);
+  
     if (items.length != 0) {
       setSubName(items[0].item.title);
     }
-    // console.log(subName);
+ 
   }, [items]);
 
   const onHandleAdd = async () => {
@@ -67,6 +119,7 @@ export default AddItem = ({ navigation }) => {
             description: description,
             category: category,
             subName: subName,
+            timestamp: new Date(),
           }),
         });
         Alert.alert("New Subscription Added");
@@ -79,90 +132,79 @@ export default AddItem = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      
-          <View style={styles.header}>
-            <Text style={styles.headerText}>New</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() =>
-              navigation.navigate("Home", { screen: "HomeScreenYourSub" })
-            }
-          >
-            <Ionicons
-              style={styles.icon}
-              name="chevron-back-outline"
-              size="30"
-              color="#A2A2B5"
-            />
-          </TouchableOpacity>
-          <View style={{ marginTop: 10, alignItems: "center" }}>
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.subHeader}>Add New Subscripton</Text>
-            </View>
-          </View>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>New</Text>
+      </View>
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() =>
+          navigation.navigate("Home", { screen: "HomeScreenYourSub" })
+        }
+      >
+        <Ionicons
+          style={styles.icon}
+          name="chevron-back-outline"
+          size="30"
+          color="#A2A2B5"
+        />
+      </TouchableOpacity>
+      <View style={{ marginTop: 10, alignItems: "center" }}>
+        <View style={{ alignItems: "center" }}>
+          <Text style={styles.subHeader}>Add New Subscripton</Text>
+        </View>
+      </View>
 
-          <Slider onViewableItemsChanged={handleViewableItemsChanged} />
+      <Slider onViewableItemsChanged={handleViewableItemsChanged} />
 
-          <View style={styles.inputitems}>
-            <Text style={styles.subhead}>Description</Text>
-            <TextInput
-              style={styles.input}
-              underlineColorAndroid="transparent"
-              placeholder={""}
-              placeholderTextColor="black"
-              autoCapitalize="none"
-              value={description}
-              onChangeText={(text) => setDescripton(text)}
-            />
-          </View>
-          <View style={styles.inputitems}>
-            <Text style={styles.subhead}>Category</Text>
-            <TextInput
-              style={styles.input}
-              underlineColorAndroid="transparent"
-              placeholder={""}
-              placeholderTextColor="black"
-              autoCapitalize="none"
-              value={category}
-              onChangeText={(text) => setCategory(text)}
-            />
-          </View>
+      <View style={styles.inputitems}>
+        <Text style={styles.subhead}>Description</Text>
+        <TextInput
+          style={styles.input}
+          underlineColorAndroid="transparent"
+          placeholder={""}
+          placeholderTextColor="black"
+          autoCapitalize="none"
+          value={description}
+          onChangeText={(text) => setDescripton(text)}
+        />
+      </View>
+      <View style={styles.inputitems}>
+        <Text style={styles.subhead}>Category</Text>
+        <DropDown setCategory={setCategory} categorys={categoryData} />
+      </View>
 
-          <View style={styles.inputitems}>
-            <Text style={styles.subhead}>Monthly Price</Text>
-            <TextInput
-              style={{
-                borderRadius: 10,
-                fontWeight: "bold",
-                fontSize: 20,
-                width: "50%",
-                height: 60,
-                borderBottomColor: "#353542",
-                borderBottomWidth: 1,
-                color: "white",
-                textAlign: "center",
-              }}
-              underlineColorAndroid="transparent"
-              placeholder={"$0"}
-              textAlign="center"
-              placeholderTextColor="white"
-              autoCapitalize="none"
-              value={cost}
-              onChangeText={(text) => setCost(text)}
-            />
-          </View>
+      <View style={styles.inputitems}>
+        <Text style={styles.subhead}>Monthly Price</Text>
+        <TextInput
+          style={{
+            fontWeight: "bold",
+            fontSize: 20,
+            width: "50%",
+            height: 60,
+            borderBottomColor: "#353542",
+            borderBottomWidth: 3,
+            color: "white",
+            textAlign: "center",
+          }}
+          underlineColorAndroid="transparent"
+          placeholder={"$0"}
+          textAlign="center"
+          placeholderTextColor="white"
+          autoCapitalize="none"
+          value={cost}
+          onChangeText={(text) => setCost(text)}
+        />
+      </View>
 
-          <View style={{ alignItems: "center", marginTop: 20 }}>
-            <CustomButton
-              text="Add Subscription"
-              color="white"
-              backgroundColor="red"
-              marginBottom={85}
-              onPress={onHandleAdd}
-            ></CustomButton>
-          </View>
-        
+      <View style={{ alignItems: "center", marginTop: 20 }}>
+        <CustomButton
+          text="Add Subscription"
+          color="white"
+          backgroundColor="red"
+          marginBottom={85}
+          onPress={onHandleAdd}
+        ></CustomButton>
+      </View>
     </SafeAreaView>
   );
 };
@@ -189,7 +231,7 @@ const styles = StyleSheet.create({
 
   iconContainer: {
     position: "absolute",
-    top: 10,
+    top: 55,
     left: 20,
   },
   icon: {
@@ -218,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   subhead: {
-    color: "#666680",
+    color: "#9999AD",
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -228,7 +270,7 @@ const styles = StyleSheet.create({
     borderColor: "#353542",
     width: "85%",
     height: 60,
-    borderWidth: 1,
+    borderWidth: 2,
     color: "white",
     fontSize: 20,
     paddingLeft: 10,
@@ -243,5 +285,27 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "#4E4E61",
     opacity: 0.6,
+  },
+  categoryButton1: {
+    flexDirection: "row",
+    borderRadius: 10,
+    padding: 10,
+    width: "75%",
+    height: 60,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#3F3F48",
+  },
+
+  categoryButton2: {
+    borderRadius: 10,
+    padding: 10,
+    width: "100%",
+    height: 60,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#3F3F48",
   },
 });

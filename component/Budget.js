@@ -8,7 +8,7 @@ import {
   StyleSheet,
   StatusBar,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
@@ -19,76 +19,21 @@ import ProgressLine from "./progressLine";
 
 import Loading from "./Loading";
 
-const DropDown = ({ setMonth, months }) => {
-  const [showDropDown, setShowDropDown] = useState(false);
-  const [month, setSelectedMonth] = useState(months[0]);
-
-  return (
-    <View style={{ position: "absolute" }}>
-      <TouchableOpacity
-        style={styles.monthButton}
-        onPress={() => setShowDropDown(!showDropDown)}
-      >
-        <Text
-          style={{
-            fontWeight: "bold",
-            color: "white",
-            marginRight: 3,
-            width: "80%",
-          }}
-        >
-          {month}
-        </Text>
-        <Ionicons name="chevron-down" color="white" size="20" />
-      </TouchableOpacity>
-      {showDropDown && (
-        <View>
-          {months.map((month, index) => (
-            <TouchableOpacity
-              style={styles.monthButton}
-              key={index}
-              onPress={() => {
-                setSelectedMonth(month);
-                setMonth(month);
-                setShowDropDown(false);
-              }}
-            >
-              <Text
-                style={{ fontWeight: "bold", color: "white", marginRight: 3 }}
-              >
-                {month}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-    </View>
-  );
-};
-
 export default Budget = ({ navigation }) => {
-  const { user, subscription, setSubscription } = useContext(UserContext);
+  const { user, data, subscription, setSubscription } = useContext(UserContext);
 
   const [totalCost, setTotalCost] = useState(0);
+  const [costStrength, setCostStrength] = useState(0);
+  const [costForProgressBar, setCostForProgressBar] = useState([]);
 
   const [loading, setLoading] = useState(true);
-
-  /*  const getUserData = async () => {
-    try {
-      if (subscription != null) {
-        // console.log("Subscription", subscription);
-        setLoading(false);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const propertyMapping = {
+    Transportation: { icon: "car", lineColor: "#B21818" },
+    Security: { icon: "finger-print", lineColor: "#AD7BFF" },
+    Entertainment: { icon: "headset", lineColor: "#00FAD9" },
+    Education: { icon: "book", lineColor: "#FFA699" },
   };
-  useEffect(() => {
-    getUserData();
-  }, [user, subscription]); */
+
   useEffect(() => {
     if (!subscription) {
       return;
@@ -98,6 +43,48 @@ export default Budget = ({ navigation }) => {
     }, 0);
     setTotalCost(calculateTotal.toFixed(2));
   }, [subscription]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const categories = {};
+    subscription.forEach((subscription) => {
+      const category = subscription.category.trim();
+      if (!categories[category]) {
+        categories[category] = parseFloat(subscription.cost);
+      } else {
+        categories[category] += parseFloat(subscription.cost);
+      }
+    });
+    // console.log(categories);
+
+    const costArray = Object.entries(categories).map(
+      ([category, cost], index) => ({
+        key: index,
+        category,
+        cost,
+      })
+    );
+    costArray.sort((a, b) => a.cost - b.cost);
+
+    // console.log(costArray)
+    const costStrength = [];
+    let totalCost = 0;
+    for (let i = costArray.length - 1; i >= 0; i--) {
+      totalCost += costArray[i].cost;
+      costStrength[costArray.length - 1 - i] = {
+        category: costArray[i].category,
+        cost: costArray[i].cost,
+        costStrength: (totalCost / data.budget).toFixed(2),
+        costLineStrength: (costArray[i].cost / data.budget).toFixed(2),
+      };
+    }
+    costStrength.sort((a, b) => a.cost - b.cost);
+    // console.log(costStrength);
+    setCostForProgressBar(costStrength);
+  }, [subscription]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -121,34 +108,29 @@ export default Budget = ({ navigation }) => {
             value={50}
             degree={"-90deg"}
             color={"#fff"}
-            zIndex={-1}
-          />
-          <CircularProgressBar
-            size={260}
-            value={40}
-            degree={"-90deg"}
-            color={"#B21818"}
-            zIndex={10}
-          />
-          <CircularProgressBar
-            size={260}
-            value={20}
-            degree={"-90deg"}
-            color={"#AD7BFF"}
-            zIndex={20}
-          />
-          <CircularProgressBar
-            size={260}
-            value={8}
-            degree={"-90deg"}
-            color={"#00FAD9"}
-            zIndex={30}
+            zIndex={-10}
           />
         </View>
+
+        {costForProgressBar.map((item, index) => (
+          <View
+            key={item.id}
+            style={{ position: "absolute", top: 80, left: 87 }}
+          >
+            <CircularProgressBar
+              zIndex={index * 10}
+              size={260}
+              value={item.costStrength * 50}
+              degree={"-90deg"}
+              color={propertyMapping[item.category].lineColor}
+            />
+          </View>
+        ))}
+
         <View style={{ marginTop: 100, alignItems: "center" }}>
           <View style={{ alignItems: "center" }}>
             <Text style={styles.bill}>${totalCost}</Text>
-            <Text style={styles.billtext}>of $1500 budget</Text>
+            <Text style={styles.billtext}>of ${data.budget} budget</Text>
           </View>
 
           <View style={styles.info}>
@@ -160,81 +142,43 @@ export default Budget = ({ navigation }) => {
             <Ionicons name="thumbs-up" color="#FFDB5E" size="15" />
           </View>
         </View>
-        <ScrollView>
-          <View style={{ alignItems: "center", marginTop: 15 }}>
-            <View style={styles.categoryBox}>
-              <View style={styles.category}>
-                <Ionicons name="car" size="40" color="#A2A2B5" />
-                <View style={styles.categoryTextBox}>
-                  <Text style={styles.categoryText1}>Transportation</Text>
-                  <Text style={styles.billtext}>$280 left to spend</Text>
-                </View>
-                <View>
-                  <Text style={styles.categoryText2}>$119.99</Text>
-                  <Text style={styles.billtext}>of $400</Text>
-                </View>
-              </View>
-              <View style={styles.category}>
-                <ProgressLine progress={0.3} lineColor="#AD7BFF" />
-              </View>
-            </View>
-            <View style={styles.categoryBox}>
-              <View style={styles.category}>
-                <Ionicons name="headset" size="40" color="#A2A2B5" />
-                <View style={styles.categoryTextBox}>
-                  <Text style={styles.categoryText1}>Entertainment</Text>
-                  <Text style={styles.billtext}>$360 left to spend</Text>
-                </View>
-                <View>
-                  <Text style={styles.categoryText2}>$239.99</Text>
-                  <Text style={styles.billtext}>of $600</Text>
-                </View>
-              </View>
-              <View style={styles.category}>
-                <ProgressLine progress={0.4} lineColor="#FFA699" />
-              </View>
-            </View>
-            <View style={styles.categoryBox}>
-              <View style={styles.category}>
-                <Ionicons name="finger-print" size="40" color="#A2A2B5" />
-                <View style={styles.categoryTextBox}>
-                  <Text style={styles.categoryText1}>Security</Text>
-                  <Text style={styles.billtext}>$395 left to spend</Text>
-                </View>
-                <View>
-                  <Text style={styles.categoryText2}>$49.99</Text>
-                  <Text style={styles.billtext}>of $500</Text>
-                </View>
-              </View>
-              <View style={styles.category}>
-                <ProgressLine progress={0.1} lineColor="#00FAD9" />
-              </View>
-            </View>
-            <TouchableOpacity
-              style={[
-                styles.categoryBox,
-                { height: 88, borderWidth: 1, borderStyle: "dashed" },
-              ]}
-              onPress={() => {
-                Alert.alert("This function is not finished");
+
+        {totalCost == 0 ? null : (
+          <View style={{ maxHeight: 500 }}>
+            <FlatList
+              data={costForProgressBar}
+              renderItem={({ item }) => {
+                return (
+                  <View style={{ alignItems: "center", marginTop: 15 }}>
+                    <View style={styles.categoryBox}>
+                      <View style={styles.category}>
+                        <Ionicons
+                          name={propertyMapping[item.category].icon}
+                          size="40"
+                          color="#A2A2B5"
+                        />
+                        <View style={styles.categoryTextBox}>
+                          <Text style={styles.categoryText1}>
+                            {item.category}
+                          </Text>
+                        </View>
+                        <View>
+                          <Text style={styles.categoryText2}>${item.cost}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.category}>
+                        <ProgressLine
+                          progress={item.costLineStrength}
+                          lineColor={propertyMapping[item.category].lineColor}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                );
               }}
-            >
-              <View style={styles.category}>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: "#A2A2B5",
-                    marginRight: 10,
-                  }}
-                >
-                  {" "}
-                  Add new category
-                </Text>
-                <Ionicons name="add-circle-outline" size={30} color="#A2A2B5" />
-              </View>
-            </TouchableOpacity>
+            />
           </View>
-        </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -314,20 +258,25 @@ const styles = StyleSheet.create({
 
   categoryTextBox: {
     marginLeft: 15,
-    width: "70%",
+    width: "60%",
   },
 
   categoryText1: {
     fontWeight: "bold",
+    fontSize: 18,
     color: "white",
-    marginLeft: 15,
+    marginLeft: 30,
     width: "70%",
     textAlign: "left",
+    justifyContent: "center",
+    alignItems: "center",
   },
   categoryText2: {
     fontWeight: "bold",
     color: "white",
     marginLeft: 5,
     textAlign: "right",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

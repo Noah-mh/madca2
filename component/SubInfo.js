@@ -12,15 +12,9 @@ import {
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import { db } from "../firebase";
-import {
-  doc,
-  updateDoc,
-  arrayRemove,
-} from "firebase/firestore";
+import { doc, updateDoc, arrayRemove } from "firebase/firestore";
 
 import CustomButton from "./CustomButton";
-
-
 
 export default SubInfo = ({ navigation, route }) => {
   const { item } = route.params;
@@ -42,6 +36,7 @@ export default SubInfo = ({ navigation, route }) => {
           description: item.description,
           category: item.category,
           subName: item.subName,
+          timestamp: item.timestamp,
         }),
       });
       alert("Subscription Successfully Deleted");

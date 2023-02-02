@@ -66,9 +66,11 @@ const DropDown = ({ setMonth, months }) => {
   );
 };
 const CalendarApp = () => {
+  const { user, subscription, setSubscription } = useContext(UserContext);
+
   const [month, setMonth] = useState("January");
   const [dateList, setDateList] = useState([]);
-
+  const [activeDate, setActiveDate] = useState(null);
   const today = new Date();
   const yearlycalendar = getYearlyCalendar(today.getFullYear());
 
@@ -122,13 +124,27 @@ const CalendarApp = () => {
         {dateList.map((date, index) => (
           <TouchableOpacity
             key={index}
-            style={styles.box}
+            style={[
+              styles.box,
+              date.date === activeDate ? styles.activeDateBox : null,
+            ]}
             onPress={() => {
-              Alert.alert("This function is not finished");
+              setActiveDate(date.date);
             }}
           >
             <Text style={styles.date}>{date.date}</Text>
-            <Text style={styles.day}>{date.dayOfWeek}</Text>
+            <Text
+              style={[
+                styles.day,
+                date.date === activeDate ? styles.activeDay : null,
+              ]}
+            >
+              {date.dayOfWeek}
+            </Text>
+
+            {date.date === activeDate ? (
+              <View style={styles.active}></View>
+            ) : null}
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -225,8 +241,6 @@ const CalendarApp = () => {
 };
 
 export default Calendar = ({ navigation }) => {
-  const { user, subscription, setSubscription } = useContext(UserContext);
-
   const [loading, setLoading] = useState(true);
 
   return (
@@ -311,7 +325,7 @@ const styles = StyleSheet.create({
   },
 
   date: {
-    fontSize: "20",
+    fontSize: "22",
     fontWeight: "bold",
     color: "white",
   },
@@ -319,6 +333,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#83839C",
     marginBottom: 30,
+  },
+  activeDay: {
+    fontWeight: "bold",
+    color: "white",
   },
   monthButton: {
     flexDirection: "row",
@@ -340,6 +358,18 @@ const styles = StyleSheet.create({
     height: 110,
     backgroundColor: "#4E4E61",
     marginRight: 12,
+  },
+  activeDateBox: {
+    borderWidth: 3,
+    width: 60,
+    height: 120,
+    backgroundColor: "#4E4E61",
+  },
+  active: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "orange",
   },
 
   organiseBox: {

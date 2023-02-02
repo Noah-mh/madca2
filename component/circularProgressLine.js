@@ -1,16 +1,17 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from "react-native";
 
-import ProgressCircle from 'react-native-progress/Circle';
+import ProgressCircle from "react-native-progress/Circle";
 
 const CircularProgressBar = (props) => {
   return (
     <View
       style={[
         styles.progressContainer,
+        { zIndex: props.zIndex },
         { transform: [{ rotate: props.degree }] },
-      ]}>
+      ]}
+    >
       <ProgressCircle
-        zIndex={props.zIndex}
         progress={props.value / 100}
         size={props.size}
         thickness={10}
@@ -26,11 +27,11 @@ const CircularProgressBar = (props) => {
 
 const styles = StyleSheet.create({
   progressContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
   },
-  
+
   progressText: {
     fontSize: 16,
   },

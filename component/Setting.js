@@ -26,7 +26,7 @@ export default Setting = ({ navigation }) => {
 
   const getUserData = async () => {
     try {
-      console.log("Document data:", data);
+      // console.log("Document data:", data);
       setUsename(data.username);
     } catch (error) {
       console.log("Error getting document:", error);
@@ -67,7 +67,7 @@ export default Setting = ({ navigation }) => {
           />
         </TouchableOpacity>
 
-        <View style={{ marginTop: 70, alignItems: "center" }}>
+        <View style={{ marginTop: 70,marginBottom:20, alignItems: "center" }}>
           <View style={{ alignItems: "center" }}>
             <Image
               style={{ width: 80, height: 80, borderRadius: 40 }}
@@ -100,7 +100,7 @@ export default Setting = ({ navigation }) => {
             <View
               style={{
                 padding: 10,
-                marginTop: 25,
+                marginTop: 5,
                 marginLeft: 15,
                 alignItems: "left",
                 justifyContent: "center",

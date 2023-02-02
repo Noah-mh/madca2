@@ -18,30 +18,14 @@ import CircularProgressBar from "./circularProgressLine";
 import Loading from "./Loading";
 
 export default HomeUpcomingBill = ({ navigation }) => {
-  const { user, subscription } = useContext(UserContext);
+  const { user,data, subscription } = useContext(UserContext);
 
   const [totalCost, setTotalCost] = useState(0);
   const [highest, setHighest] = useState(0);
   const [lowest, setLowest] = useState(0);
+  const [costStrength, setCostStrength] = useState(0);
 
   const [loading, setLoading] = useState(true);
-
-/*   const getUserData = async () => {
-    try {
-      if (subscription != null) {
-        // console.log("Subscription", subscription);
-        setLoading(false);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getUserData();
-  }, [user, subscription]); */
 
   useEffect(() => {
     if (!subscription) {
@@ -59,146 +43,156 @@ export default HomeUpcomingBill = ({ navigation }) => {
     setLowest(minCost);
   }, [subscription]);
 
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const calculateCostStrength = (
+      (totalCost / parseFloat(data.budget)) *
+      75
+    ).toFixed(2);
+
+    setCostStrength(calculateCostStrength);
+  }, [totalCost]);
+
   return (
     <SafeAreaView style={styles.container}>
       {/* {loading ? (
         <Loading />
       ) : (
         <View> */}
-          <View>
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={() => navigation.navigate("Setting")}
-            >
-              <Ionicons
-                style={styles.icon}
-                name="settings-outline"
-                size="30"
-                color="#A2A2B5"
-              />
-            </TouchableOpacity>
-            <View style={{ position: "absolute", top: 40, left: 65 }}>
-              <CircularProgressBar
-                size={300}
-                value={75}
-                degree={"-135deg"}
-                color={"#fff"}
-                zIndex={-1}
-              />
-              <CircularProgressBar
-                size={300}
-                value={60}
-                degree={"-135deg"}
-                color={"#B21818"}
-                zIndex={1}
-              />
-            </View>
-            <View style={{ marginTop: 100, alignItems: "center" }}>
-              <AppLogo />
-              <View style={{ alignItems: "center" }}>
-                <Text style={styles.bill}>${totalCost}</Text>
-                <Text style={styles.billtext}>This month bills</Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => navigation.navigate("Budget")}
-              >
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  See Your Budget
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: "row" }}>
-              <View style={styles.box}>
-                <Text style={{ color: "#fff" }}>Active Subs</Text>
-                <Text style={styles.textInsideBox}>
-                  {totalCost == 0 ? 0 : subscription.length}
-                </Text>
-              </View>
-              <View style={styles.box}>
-                <Text style={{ color: "#fff" }}>Highest Subs</Text>
-                <Text style={styles.textInsideBox}>
-                  ${totalCost == 0 ? 0 : highest}
-                </Text>
-              </View>
-              <View style={styles.box}>
-                <Text style={{ color: "#fff" }}>Lowest Subs</Text>
-                <Text style={styles.textInsideBox}>
-                  ${totalCost == 0 ? 0 : lowest}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={[
-                styles.subscriptionBox,
-                {
-                  flexDirection: "row",
-                  marginTop: 28,
-                  backgroundColor: "#0E0E12",
-                },
-              ]}
-            >
-              <TouchableOpacity
-                style={styles.button2}
-                onPress={() => navigation.navigate("HomeYourSub")}
-              >
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  Your Subscripton
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.button2,
-                  { backgroundColor: "rgba(78, 78, 97, 0.4)" },
-                ]}
-              >
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  Upcoming Bills
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {totalCost == 0 ? null : (
-              <View style={{maxHeight:250}}>
-                <FlatList
-                  data={subscription}
-                  renderItem={({ item }) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigation.navigate("Info");
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.subscriptionBox,
-                            {
-                              flexDirection: "row",
-                              marginTop: 15,
-                              backgroundColor: "#353542",
-                            },
-                          ]}
-                        >
-                          <View style={styles.subscriptionDate}>
-                            <Text style={{ color: "#fff" }}>Jun</Text>
-                            <Text style={styles.textInsideBox}>25</Text>
-                          </View>
-                          <Text style={styles.subscriptionText1}>
-                            {item.subName}
-                          </Text>
-                          <Text style={styles.subscriptionText2}>
-                            ${item.cost}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  }}
-                />
-              </View>
-            )}
+      <View>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => navigation.navigate("Setting")}
+        >
+          <Ionicons
+            style={styles.icon}
+            name="settings-outline"
+            size="30"
+            color="#A2A2B5"
+          />
+        </TouchableOpacity>
+        <View style={{ position: "absolute", top: 40, left: 65 }}>
+          <CircularProgressBar
+            size={300}
+            value={75}
+            degree={"-135deg"}
+            color={"#fff"}
+            zIndex={-1}
+          />
+          <CircularProgressBar
+            size={300}
+            value={totalCost == 0 ? 0 : costStrength}
+            degree={"-135deg"}
+            color={"#B21818"}
+            zIndex={1}
+          />
+        </View>
+        <View style={{ marginTop: 100, alignItems: "center" }}>
+          <AppLogo />
+          <View style={{ alignItems: "center" }}>
+            <Text style={styles.bill}>${totalCost}</Text>
+            <Text style={styles.billtext}>This month bills</Text>
           </View>
-       {/*  </View>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Budget")}
+          >
+            <Text style={{ fontWeight: "bold", color: "white" }}>
+              See Your Budget
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ flexDirection: "row" }}>
+          <View style={styles.box}>
+            <Text style={{ color: "#fff" }}>Active Subs</Text>
+            <Text style={styles.textInsideBox}>
+              {totalCost == 0 ? 0 : subscription.length}
+            </Text>
+          </View>
+          <View style={styles.box}>
+            <Text style={{ color: "#fff" }}>Highest Subs</Text>
+            <Text style={styles.textInsideBox}>
+              ${totalCost == 0 ? 0 : highest}
+            </Text>
+          </View>
+          <View style={styles.box}>
+            <Text style={{ color: "#fff" }}>Lowest Subs</Text>
+            <Text style={styles.textInsideBox}>
+              ${totalCost == 0 ? 0 : lowest}
+            </Text>
+          </View>
+        </View>
+        <View
+          style={[
+            styles.subscriptionBox,
+            {
+              flexDirection: "row",
+              marginTop: 28,
+              backgroundColor: "#0E0E12",
+            },
+          ]}
+        >
+          <TouchableOpacity
+            style={styles.button2}
+            onPress={() => navigation.navigate("HomeYourSub")}
+          >
+            <Text style={{ fontWeight: "bold", color: "white" }}>
+              Your Subscripton
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button2,
+              { backgroundColor: "rgba(78, 78, 97, 0.4)" },
+            ]}
+          >
+            <Text style={{ fontWeight: "bold", color: "white" }}>
+              Upcoming Bills
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {totalCost == 0 ? null : (
+          <View style={{ maxHeight: 250 }}>
+            <FlatList
+              data={subscription}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("Info");
+                    }}
+                  >
+                    <View
+                      style={[
+                        styles.subscriptionBox,
+                        {
+                          flexDirection: "row",
+                          marginTop: 15,
+                          backgroundColor: "#353542",
+                        },
+                      ]}
+                    >
+                      <View style={styles.subscriptionDate}>
+                        <Text style={{ color: "#fff" }}>Jun</Text>
+                        <Text style={styles.textInsideBox}>25</Text>
+                      </View>
+                      <Text style={styles.subscriptionText1}>
+                        {item.subName}
+                      </Text>
+                      <Text style={styles.subscriptionText2}>${item.cost}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        )}
+      </View>
+      {/*  </View>
       )} */}
     </SafeAreaView>
   );
