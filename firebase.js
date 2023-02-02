@@ -1,19 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC9mDDpyr-TU6nWMrN6giIRDiKg10izWsc",
-  authDomain: "mad-assignment-b1c4e.firebaseapp.com",
-  projectId: "mad-assignment-b1c4e",
-  storageBucket: "mad-assignment-b1c4e.appspot.com",
-  messagingSenderId: "444639331747",
-  appId: "1:444639331747:web:5bae66ea3243e8c0048616",
-  measurementId: "G-VJFCN9J2CL",
+  apiKey: "AIzaSyAtrO32qlxwMi5KHK6rCqJaCpWOm51g2cA",
+  authDomain: "moneywise-f6b90.firebaseapp.com",
+  projectId: "moneywise-f6b90",
+  storageBucket: "moneywise-f6b90.appspot.com",
+  messagingSenderId: "515221396273",
+  appId: "1:515221396273:web:30f0536a30f0d44cdeae10",
 };
 
 const firebaseapp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseapp);
 
-export {firebaseapp, db} ;
+export { firebaseapp, db };

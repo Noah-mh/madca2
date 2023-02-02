@@ -14,28 +14,24 @@ import {
 } from "react-native";
 
 import { UserContext } from "./UserContext";
-import { firebaseapp, db } from "../firebase";
+import { db } from "../firebase";
 import {
   doc,
   updateDoc,
   arrayUnion,
-  arrayRemove,
-  getDoc,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+
 import Loading from "./Loading";
 import Slider from "./sliderComponent/Slider";
 
-const auth = getAuth(firebaseapp);
+
 
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "./CustomButton";
 
 export default AddItem = ({ navigation }) => {
-  const { user } = useContext(UserContext);
-
-  const [subscription, setSubscription] = useState([]);
+  const { user, subscription, setSubscription } = useContext(UserContext);
 
   const [loading, setLoading] = useState(true);
 
@@ -46,26 +42,7 @@ export default AddItem = ({ navigation }) => {
 
   const [items, setItems] = useState([]);
 
-  const getUserData = async () => {
-    try {
-      const docRef = doc(db, "userData", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setSubscription(docSnap.data().subscriptions);
-
-        setLoading(false);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getUserData();
-  }, [user]);
+  
   const handleViewableItemsChanged = (viewableItems) => {
     setItems(viewableItems);
     // console.log("viewable items in additem.js:", viewableItems);
@@ -75,7 +52,7 @@ export default AddItem = ({ navigation }) => {
     if (items.length != 0) {
       setSubName(items[0].item.title);
     }
-    console.log(subName);
+    // console.log(subName);
   }, [items]);
 
   const onHandleAdd = async () => {
@@ -102,10 +79,7 @@ export default AddItem = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading ? (
-        <Loading />
-      ) : (
-        <View>
+      
           <View style={styles.header}>
             <Text style={styles.headerText}>New</Text>
           </View>
@@ -122,14 +96,14 @@ export default AddItem = ({ navigation }) => {
               color="#A2A2B5"
             />
           </TouchableOpacity>
-          <View style={{ marginTop: 30, alignItems: "center" }}>
+          <View style={{ marginTop: 10, alignItems: "center" }}>
             <View style={{ alignItems: "center" }}>
               <Text style={styles.subHeader}>Add New Subscripton</Text>
             </View>
           </View>
 
           <Slider onViewableItemsChanged={handleViewableItemsChanged} />
- 
+
           <View style={styles.inputitems}>
             <Text style={styles.subhead}>Description</Text>
             <TextInput
@@ -179,17 +153,16 @@ export default AddItem = ({ navigation }) => {
             />
           </View>
 
-          <View style={{ alignItems: "center", marginTop: 40 }}>
+          <View style={{ alignItems: "center", marginTop: 20 }}>
             <CustomButton
               text="Add Subscription"
               color="white"
               backgroundColor="red"
-              marginBottom={25}
+              marginBottom={85}
               onPress={onHandleAdd}
             ></CustomButton>
           </View>
-        </View>
-      )}
+        
     </SafeAreaView>
   );
 };
@@ -240,14 +213,14 @@ const styles = StyleSheet.create({
   },
 
   inputitems: {
-    marginTop: 10,
+    // marginTop: 3,
     alignItems: "center",
     justifyContent: "center",
   },
   subhead: {
     color: "#666680",
     fontWeight: "bold",
-    fontSize:16
+    fontSize: 16,
   },
 
   input: {

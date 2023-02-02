@@ -14,34 +14,40 @@ import {
 // ico
 import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
+import { getAuth, signOut } from "firebase/auth";
+
 import CustomButton from "./CustomButton";
 import SwitchIcon from "./switch";
-import { firebaseapp, db } from "../firebase";
-import { doc, collection, addDoc, getDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
 const auth = getAuth();
 
 export default Setting = ({ navigation }) => {
-  const { user } = useContext(UserContext);
-  const [username, setUsename] = useState("");
+  const { user, data } = useContext(UserContext);
+  const [username, setUsename] = useState(data.username);
 
+  const getUserData = async () => {
+    try {
+      console.log("Document data:", data);
+      setUsename(data.username);
+    } catch (error) {
+      console.log("Error getting document:", error);
+    }
+  };
   useEffect(() => {
-    (async () => {try{
-      const docRef = doc(db, "userData", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
-        setUsename(docSnap.data().username);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }}catch(error){
-        console.log("Error getting document:", error);
-      }
-    })();
+    getUserData();
+    console.log("username:", username);
   }, [user]);
+
+  const onHandleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Sign out Okay!")
+        navigation.navigate("SignIn");
+      })
+      .catch((e) => {
+        const errorMessage = error.message;
+        alert(errorMessage);
+      });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -163,9 +169,8 @@ export default Setting = ({ navigation }) => {
                       width: "16%",
                     }}
                   >
-                    <SwitchIcon/>
+                    <SwitchIcon />
                   </View>
-                  
                 </TouchableOpacity>
               </View>
             </View>
@@ -559,7 +564,7 @@ export default Setting = ({ navigation }) => {
                 color="white"
                 backgroundColor="#B21818"
                 marginTop={50}
-                onPress={() => navigation.navigate("SignIn")}
+                onPress={onHandleSignOut}
               ></CustomButton>
             </View>
           </View>

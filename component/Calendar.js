@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Alert,
   SafeAreaView,
@@ -13,6 +13,9 @@ import {
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
+import { UserContext } from "./UserContext";
+
+import Loading from "./Loading";
 import getYearlyCalendar, { getMonthlyCalendar } from "./YearlyCalendar";
 const { width } = Dimensions.get("screen");
 
@@ -222,6 +225,10 @@ const CalendarApp = () => {
 };
 
 export default Calendar = ({ navigation }) => {
+  const { user, subscription, setSubscription } = useContext(UserContext);
+
+  const [loading, setLoading] = useState(true);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.lightBG}></View>

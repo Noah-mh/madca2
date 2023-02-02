@@ -14,30 +14,21 @@ import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
 import AppLogo from "./AppLogo";
 import CircularProgressBar from "./circularProgressLine";
-import { firebaseapp, db } from "../firebase";
-import { doc, collection, addDoc, getDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+
 import Loading from "./Loading";
 
-const auth = getAuth();
-
 export default HomeUpcomingBill = ({ navigation }) => {
-  const { user } = useContext(UserContext);
+  const { user, subscription } = useContext(UserContext);
 
-  const [subscription, setSubscription] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [highest, setHighest] = useState(0);
   const [lowest, setLowest] = useState(0);
 
   const [loading, setLoading] = useState(true);
 
-  const getUserData = async () => {
+/*   const getUserData = async () => {
     try {
-      const docRef = doc(db, "userData", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setSubscription(docSnap.data().subscriptions);
+      if (subscription != null) {
         // console.log("Subscription", subscription);
         setLoading(false);
       } else {
@@ -50,7 +41,7 @@ export default HomeUpcomingBill = ({ navigation }) => {
   };
   useEffect(() => {
     getUserData();
-  }, [user,subscription]);
+  }, [user, subscription]); */
 
   useEffect(() => {
     if (!subscription) {
@@ -70,10 +61,10 @@ export default HomeUpcomingBill = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading ? (
+      {/* {loading ? (
         <Loading />
       ) : (
-        <View>
+        <View> */}
           <View>
             <TouchableOpacity
               style={styles.iconContainer}
@@ -169,44 +160,46 @@ export default HomeUpcomingBill = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             {totalCost == 0 ? null : (
-              <FlatList
-                data={subscription}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate("Info");
-                      }}
-                    >
-                      <View
-                        style={[
-                          styles.subscriptionBox,
-                          {
-                            flexDirection: "row",
-                            marginTop: 15,
-                            backgroundColor: "#353542",
-                          },
-                        ]}
+              <View style={{maxHeight:250}}>
+                <FlatList
+                  data={subscription}
+                  renderItem={({ item }) => {
+                    return (
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.navigate("Info");
+                        }}
                       >
-                        <View style={styles.subscriptionDate}>
-                          <Text style={{ color: "#fff" }}>Jun</Text>
-                          <Text style={styles.textInsideBox}>25</Text>
+                        <View
+                          style={[
+                            styles.subscriptionBox,
+                            {
+                              flexDirection: "row",
+                              marginTop: 15,
+                              backgroundColor: "#353542",
+                            },
+                          ]}
+                        >
+                          <View style={styles.subscriptionDate}>
+                            <Text style={{ color: "#fff" }}>Jun</Text>
+                            <Text style={styles.textInsideBox}>25</Text>
+                          </View>
+                          <Text style={styles.subscriptionText1}>
+                            {item.subName}
+                          </Text>
+                          <Text style={styles.subscriptionText2}>
+                            ${item.cost}
+                          </Text>
                         </View>
-                        <Text style={styles.subscriptionText1}>
-                          {item.subName}
-                        </Text>
-                        <Text style={styles.subscriptionText2}>
-                          ${item.cost}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+              </View>
             )}
           </View>
-        </View>
-      )}
+       {/*  </View>
+      )} */}
     </SafeAreaView>
   );
 };

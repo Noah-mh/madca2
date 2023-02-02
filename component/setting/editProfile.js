@@ -14,14 +14,12 @@ import {
 } from "react-native";
 import validatePassword from "../validatePassword";
 import { firebaseapp, db } from "../../firebase";
-import { collection, doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import {
   getAuth,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
   updateEmail,
   updatePassword,
-  reauthenticateWithCredential,
 } from "firebase/auth";
 
 const auth = getAuth(firebaseapp);
@@ -34,26 +32,20 @@ export default EditProfile = ({ navigation }) => {
   const [passwordError, setPasswordError] = useState("");
   const [isPasswordMatch, setIsPasswordMatch] = useState(true);
 
-  const { user, setUser } = useContext(UserContext);
-  const [username, setUsename] = useState("");
+  const { user, data, setUser } = useContext(UserContext);
+  const [username, setUsename] = useState(data.username);
 
+  const getUserData = async () => {
+    try {
+      console.log("Document data:", data);
+      setUsename(data.username);
+    } catch (error) {
+      console.log("Error getting document:", error);
+    }
+  };
   useEffect(() => {
-    (async () => {
-      try {
-        const docRef = doc(db, "userData", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          console.log("Document data:", docSnap.data());
-          setUsename(docSnap.data().username);
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      } catch (error) {
-        alert(error.message);
-      }
-    })();
+    getUserData();
+    console.log(username)
   }, [user]);
 
   useEffect(() => {

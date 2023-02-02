@@ -11,18 +11,16 @@ import {
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
-import { firebaseapp, db } from "../firebase";
+import { db } from "../firebase";
 import {
-  collection,
   doc,
   updateDoc,
-  getDoc,
   arrayRemove,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+
 import CustomButton from "./CustomButton";
 
-const auth = getAuth(firebaseapp);
+
 
 export default SubInfo = ({ navigation, route }) => {
   const { item } = route.params;
@@ -42,7 +40,7 @@ export default SubInfo = ({ navigation, route }) => {
         subscriptions: arrayRemove({
           cost: item.cost,
           description: item.description,
-          // category: item.category,
+          category: item.category,
           subName: item.subName,
         }),
       });

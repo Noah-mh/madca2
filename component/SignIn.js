@@ -11,12 +11,10 @@ import {
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";
 import { UserContext } from "./UserContext";
-import { firebaseapp, db } from "../firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { firebaseapp } from "../firebase";
+
 import {
   getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
@@ -25,7 +23,7 @@ const auth = getAuth(firebaseapp);
 export default RegisterScreen2 = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   const onHandleSignIn = () => {
     if (email != "" && password != "") {

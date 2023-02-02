@@ -15,17 +15,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
 import AppLogo from "./AppLogo";
 import CircularProgressBar from "./circularProgressLine";
-import { firebaseapp, db } from "../firebase";
-import { doc, collection, addDoc, getDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
+
 import Loading from "./Loading";
 
-const auth = getAuth();
-
 export default HomeYourSub = ({ navigation }) => {
-  const { user } = useContext(UserContext);
+  const { user, data, setData, subscription, setSubscription } =
+    useContext(UserContext);
 
-  const [subscription, setSubscription] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [highest, setHighest] = useState(0);
   const [lowest, setLowest] = useState(0);
@@ -40,26 +38,49 @@ export default HomeYourSub = ({ navigation }) => {
     "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
 
+  // const getUserData = async () => {
+  //   try {
+  //     const docRef = doc(db, "userData", user.uid);
+  //     const docSnap = await getDoc(docRef);
+
+  //     if (docSnap.exists()) {
+  //       setData(docSnap.data());
+  //       setSubscription(data.subscriptions);
+  //       console.log(docSnap.data());
+  //       setLoading(false);
+  //     } else {
+  //       // doc.data() will be undefined in this case
+  //       console.log("No such document!");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+
   const getUserData = async () => {
     try {
       const docRef = doc(db, "userData", user.uid);
       const docSnap = await getDoc(docRef);
+      return docSnap;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
+    getUserData().then((docSnap) => {
       if (docSnap.exists()) {
-        setSubscription(docSnap.data().subscriptions);
-        // console.log(subscription);
+        setData(docSnap.data());
+        setSubscription(data.subscriptions);
+        console.log(docSnap.data());
         setLoading(false);
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getUserData();
-  }, [user,subscription]);
+    });
+  }, [user]);
 
   useEffect(() => {
     if (!subscription) {
@@ -178,7 +199,7 @@ export default HomeYourSub = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             {totalCost == 0 ? null : (
-              <View>
+              <View style={{maxHeight:250}}>
                 <FlatList
                   data={subscription}
                   renderItem={({ item }) => {
@@ -210,6 +231,7 @@ export default HomeYourSub = ({ navigation }) => {
                     );
                   }}
                 />
+                
               </View>
             )}
           </View>
@@ -446,7 +468,7 @@ useEffect(() => {
     })();
   }, [subscription, images]); */
 
-/*  {updateSubscription.map((item, i) => ( 
+/*  {subscription.map((item, i) => ( 
       <TouchableOpacity
             onPress={() => {
               navigation.navigate("Info");
@@ -462,7 +484,7 @@ useEffect(() => {
                 },
               ]}
             >
-              <Image source={require({item.image}}></Image>
+              <Image source={imageMapping[item.subName]}></Image>
               <Text style={styles.subscriptionText1}>{item.subName}</Text>
               <Text style={styles.subscriptionText2}>${item.cost}</Text>
             </View>

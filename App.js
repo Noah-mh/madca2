@@ -63,11 +63,13 @@ function App() {
             component={BottomBarNavigator}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="Info"
-            component={InfoScreen}
-            options={{ headerShown: false }}
-          />
+          <Stack.Group screenOptions={{presentation : "modal"}}>
+            <Stack.Screen
+              name="Info"
+              component={InfoScreen}
+              options={{ headerShown: false }}
+            />
+          </Stack.Group>
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>
