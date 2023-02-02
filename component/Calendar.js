@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  FlatList,
 } from "react-native";
 // ico
 import { Ionicons } from "@expo/vector-icons";
@@ -21,7 +22,9 @@ const { width } = Dimensions.get("screen");
 
 const DropDown = ({ setMonth, months }) => {
   const [showDropDown, setShowDropDown] = useState(false);
-  const [month, setSelectedMonth] = useState(months[0]);
+  const [month, setSelectedMonth] = useState(
+    new Date().toLocaleString("default", { month: "long" })
+  );
 
   return (
     <View style={{ position: "absolute" }}>
@@ -65,20 +68,28 @@ const DropDown = ({ setMonth, months }) => {
     </View>
   );
 };
-const CalendarApp = () => {
+export default Calendar = ({ navigation }) => {
   const { user, subscription, setSubscription } = useContext(UserContext);
-
-  const [month, setMonth] = useState("January");
-  const [dateList, setDateList] = useState([]);
-  const [activeDate, setActiveDate] = useState(null);
   const today = new Date();
+  const [month, setMonth] = useState(
+    today.toLocaleString("default", { month: "long" })
+  );
+  const [dateList, setDateList] = useState([]);
+  const [activeDate, setActiveDate] = useState(today);
+
   const yearlycalendar = getYearlyCalendar(today.getFullYear());
 
   const months = yearlycalendar.map((arr) => arr[0].month);
 
-  const day = String(today.getDate()).padStart(2, "0");
-  const monthss = String(today.getMonth() + 1).padStart(2, "0");
-  const year = today.getFullYear();
+  const day = String(
+    activeDate.date ? activeDate.date : today.getDate()
+  ).padStart(2, "0");
+  const monthss = String(
+    activeDate.month
+      ? months.indexOf(activeDate.month) + 1
+      : today.getMonth() + 1
+  ).padStart(2, "0");
+  const year = activeDate.year ? activeDate.year : today.getFullYear();
 
   const formattedDate = `${day}.${monthss}.${year}`;
 
@@ -94,154 +105,13 @@ const CalendarApp = () => {
     getDates();
   }, [month]);
 
-  return (
-    <View>
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "left",
-          width: "100%",
-          flexDirection: "row",
-          marginLeft: 25,
-          marginTop: 20,
-        }}
-      >
-        <Text style={{ fontSize: 15, color: "#83839C", width: "70%" }}>
-          3 subscriptions for today
-        </Text>
-      </View>
-      <View
-        style={{ position: "absolute", right: 125, top: 10, zIndex: 10000 }}
-      >
-        <DropDown
-          style={styles.monthButton}
-          setMonth={setMonth}
-          months={months}
-        />
-      </View>
-
-      <ScrollView style={{ marginLeft: 25, marginTop: 30 }} horizontal={true}>
-        {dateList.map((date, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.box,
-              date.date === activeDate ? styles.activeDateBox : null,
-            ]}
-            onPress={() => {
-              setActiveDate(date.date);
-            }}
-          >
-            <Text style={styles.date}>{date.date}</Text>
-            <Text
-              style={[
-                styles.day,
-                date.date === activeDate ? styles.activeDay : null,
-              ]}
-            >
-              {date.dayOfWeek}
-            </Text>
-
-            {date.date === activeDate ? (
-              <View style={styles.active}></View>
-            ) : null}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <View style={[styles.organiseBox, { marginLeft: 25, marginTop: 40 }]}>
-        <View style={{ justifyContent: "left", width: "70%" }}>
-          <Text style={styles.textInsideBox}>{month}</Text>
-          <Text style={{ fontSize: 13, color: "#83839C", marginTop: 5 }}>
-            {formattedDate}
-          </Text>
-        </View>
-        <View style={{ justifyContent: "right" }}>
-          <Text
-            style={[
-              styles.textInsideBox,
-              { textAlign: "right", marginRight: 35 },
-            ]}
-          >
-            $24.99
-          </Text>
-          <Text
-            style={{
-              fontSize: 13,
-              color: "#83839C",
-              textAlign: "right",
-              marginRight: 20,
-              marginTop: 5,
-            }}
-          >
-            in upcoming bills
-          </Text>
-        </View>
-      </View>
-      <View
-        style={{
-          marginTop: 20,
-          marginLeft: 25,
-          alignItems: "left",
-          zIndex: -1,
-        }}
-      >
-        <ScrollView>
-          <View
-            style={[styles.organiseBox, { marginTop: 5, flexDirection: "row" }]}
-          >
-            <TouchableOpacity
-              style={styles.subBox}
-              onPress={() => {
-                Alert.alert("This function is not finished");
-              }}
-            >
-              <Image source={require("../assets/SpotifyLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>Spotify</Text>
-              <Text style={styles.subscriptionText2}>$5.99</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subBox}
-              onPress={() => {
-                Alert.alert("This function is not finished");
-              }}
-            >
-              <Image source={require("../assets/YTPremiumLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>YouTube Premium</Text>
-              <Text style={styles.subscriptionText2}>$18.99</Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={[styles.organiseBox, { marginTop: 5, flexDirection: "row" }]}
-          >
-            <TouchableOpacity
-              style={styles.subBox}
-              onPress={() => {
-                Alert.alert("This function is not finished");
-              }}
-            >
-              <Image source={require("../assets/OneDriveLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>Microsoft OneDrive</Text>
-              <Text style={styles.subscriptionText2}>$5.99</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.subBox}
-              onPress={() => {
-                Alert.alert("This function is not finished");
-              }}
-            >
-              <Image source={require("../assets/NetflixLogo.png")}></Image>
-              <Text style={styles.subscriptionText1}>Netflix</Text>
-              <Text style={styles.subscriptionText2}>$39.99</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </View>
-    </View>
-  );
-};
-
-export default Calendar = ({ navigation }) => {
-  const [loading, setLoading] = useState(true);
+  const imageMapping = {
+    Spotify: require("../assets/SpotifyLogo.png"),
+    "YouTube Premium": require("../assets/YTPremiumLogo.png"),
+    "Microsoft One Drive": require("../assets/OneDriveLogo.png"),
+    Netflix: require("../assets/NetflixLogo.png"),
+    "HBO Go": require("../assets/HBOGOsmallLogo.png"),
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -267,8 +137,139 @@ export default Calendar = ({ navigation }) => {
             <Text style={styles.bill}>Schedule</Text>
           </View>
         </View>
+        <View>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "left",
+              width: "100%",
+              flexDirection: "row",
+              marginLeft: 25,
+              marginTop: 20,
+            }}
+          >
+            <Text style={{ fontSize: 15, color: "#83839C", width: "70%" }}>
+              3 subscriptions for today
+            </Text>
+          </View>
+          <View
+            style={{ position: "absolute", right: 125, top: 10, zIndex: 10000 }}
+          >
+            <DropDown
+              style={styles.monthButton}
+              setMonth={setMonth}
+              months={months}
+            />
+          </View>
 
-        <CalendarApp />
+          <ScrollView
+            style={{ marginLeft: 25, marginTop: 30 }}
+            horizontal={true}
+          >
+            {dateList.map((date, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.box,
+                  date.date === activeDate.date ? styles.activeDateBox : null,
+                ]}
+                onPress={() => {
+                  setActiveDate(date);
+                }}
+              >
+                <Text style={styles.date}>{date.date}</Text>
+                <Text
+                  style={[
+                    styles.day,
+                    date.date === activeDate.date ? styles.activeDay : null,
+                  ]}
+                >
+                  {date.dayOfWeek}
+                </Text>
+
+                {date.date === activeDate.date ? (
+                  <View style={styles.active}></View>
+                ) : null}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <View style={[styles.organiseBox, { marginTop: 40 }]}>
+            <View style={{ justifyContent: "left", width: "65%" }}>
+              <Text style={styles.textInsideBox}>{month}</Text>
+              <Text style={{ fontSize: 13, color: "#83839C", marginTop: 5 }}>
+                {formattedDate}
+              </Text>
+            </View>
+            <View
+              style={{
+                justifyContent: "right",
+                alignSelf: "right",
+                width: "25%",
+              }}
+            >
+              <Text style={[styles.textInsideBox, { textAlign: "right" }]}>
+                $24.99
+              </Text>
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: "#83839C",
+                  textAlign: "right",
+                  alignSelf: "right",
+                  marginTop: 5,
+                }}
+              >
+                in upcoming bills
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              marginTop: 20,
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: -1,
+              width: width,
+            }}
+          >
+            <View style={{ maxHeight: 280 }}>
+              <FlatList
+                numColumns={2}
+                data={subscription}
+                renderItem={({ item, index }) => {
+                  return (
+                    <View
+                      style={[
+                        styles.organiseBox,
+                        {
+                          marginTop: 5,
+                          marginLeft: index % 2 === 0 ? 7 : 10,
+                          width: "47%",
+                          height: 200,
+                        },
+                      ]}
+                    >
+                      <TouchableOpacity
+                        style={styles.subBox}
+                        onPress={() => {
+                          navigation.navigate("Info", { item: item });
+                        }}
+                      >
+                        <Image source={imageMapping[item.subName]}></Image>
+                        <Text style={styles.subscriptionText1}>
+                          {item.subName}
+                        </Text>
+                        <Text style={styles.subscriptionText2}>
+                          ${item.cost}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -374,9 +375,8 @@ const styles = StyleSheet.create({
 
   organiseBox: {
     alignItems: "center",
-    justifyContent: "left",
-    marginLeft: 3,
-    width: "100%",
+    justifyContent: "center",
+    width: width,
     flexDirection: "row",
   },
 
@@ -391,13 +391,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     alignItems: "left",
-    width: "46%",
+    width: "100%",
     height: 200,
     backgroundColor: "#4E4E61",
-
-    marginTop: 5,
-
-    marginRight: 10,
   },
 
   subscriptionText1: {
