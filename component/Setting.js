@@ -259,7 +259,7 @@ export default Setting = ({ navigation }) => {
                     color="#A2A2B5"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+                <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}  onPress={() => navigation.navigate("Currency")}>
                   <Ionicons
                     style={{ width: "6%", marginLeft: 15 }}
                     name="cash-outline"

@@ -76,6 +76,8 @@ export default Calendar = ({ navigation }) => {
   );
   const [dateList, setDateList] = useState([]);
   const [activeDate, setActiveDate] = useState(today);
+  const [totalCost, setTotalCost] = useState(0);
+  const [match, setMatch] = useState([]);
 
   const yearlycalendar = getYearlyCalendar(today.getFullYear());
 
@@ -104,6 +106,26 @@ export default Calendar = ({ navigation }) => {
   useEffect(() => {
     getDates();
   }, [month]);
+
+  useEffect(() => {
+    if (!match) {
+      return;
+    }
+    const calculateTotal = match.reduce((total, subscription) => {
+      return total + parseFloat(subscription.cost);
+    }, 0);
+    setTotalCost(calculateTotal.toFixed(2));
+  }, [match]);
+
+  const matchingSubscriptions = subscription.filter((subscription) => {
+    return (
+      activeDate.date === subscription.timestamp.toDate().getDate() 
+    );
+  });
+  useEffect(() => {
+    setMatch(matchingSubscriptions);
+    console.log(matchingSubscriptions);
+  }, [activeDate]);
 
   const imageMapping = {
     Spotify: require("../assets/SpotifyLogo.png"),
@@ -149,7 +171,7 @@ export default Calendar = ({ navigation }) => {
             }}
           >
             <Text style={{ fontSize: 15, color: "#83839C", width: "70%" }}>
-              3 subscriptions for today
+              {match.length} subscriptions for today
             </Text>
           </View>
           <View
@@ -208,7 +230,7 @@ export default Calendar = ({ navigation }) => {
               }}
             >
               <Text style={[styles.textInsideBox, { textAlign: "right" }]}>
-                $24.99
+                ${totalCost}
               </Text>
               <Text
                 style={{
@@ -235,7 +257,7 @@ export default Calendar = ({ navigation }) => {
             <View style={{ maxHeight: 280 }}>
               <FlatList
                 numColumns={2}
-                data={subscription}
+                data={match}
                 renderItem={({ item, index }) => {
                   return (
                     <View

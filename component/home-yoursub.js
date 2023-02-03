@@ -47,9 +47,7 @@ export default HomeYourSub = ({ navigation }) => {
         (doc) => {
           console.log("Current data: ", doc.data());
           setData(doc.data());
-          if (data != null) {
-            setSubscription(doc.data().subscriptions);
-          }
+          setSubscription(doc.data().subscriptions);
 
           setLoading(false);
         },
@@ -66,10 +64,13 @@ export default HomeYourSub = ({ navigation }) => {
     // setSubscription(data.subscriptions);
   }, [user]);
 
+ 
+
   useEffect(() => {
     if (!subscription) {
       return;
     }
+
     const calculateTotal = subscription.reduce((total, subscription) => {
       return total + parseFloat(subscription.cost);
     }, 0);

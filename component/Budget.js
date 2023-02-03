@@ -114,7 +114,7 @@ export default Budget = ({ navigation }) => {
 
         {costForProgressBar.map((item, index) => (
           <View
-            key={item.id}
+            key={index}
             style={{ position: "absolute", top: 80, left: 87 }}
           >
             <CircularProgressBar

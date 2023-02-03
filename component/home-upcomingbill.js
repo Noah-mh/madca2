@@ -18,7 +18,7 @@ import CircularProgressBar from "./circularProgressLine";
 import Loading from "./Loading";
 
 export default HomeUpcomingBill = ({ navigation }) => {
-  const { user,data, subscription } = useContext(UserContext);
+  const { user, data, subscription } = useContext(UserContext);
 
   const [totalCost, setTotalCost] = useState(0);
   const [highest, setHighest] = useState(0);
@@ -177,8 +177,14 @@ export default HomeUpcomingBill = ({ navigation }) => {
                       ]}
                     >
                       <View style={styles.subscriptionDate}>
-                        <Text style={{ color: "#fff" }}>Jun</Text>
-                        <Text style={styles.textInsideBox}>25</Text>
+                        <Text style={{ color: "#fff" }}>
+                          {item.timestamp.toDate().toLocaleString("default", {
+                            month: "short",
+                          })}
+                        </Text>
+                        <Text style={styles.textInsideBox}>
+                          {String(item.timestamp.toDate().getDate()).padStart(2, "0")}
+                        </Text>
                       </View>
                       <Text style={styles.subscriptionText1}>
                         {item.subName}

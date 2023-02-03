@@ -18,6 +18,7 @@ import RegisterScreen2 from "./component/register2";
 import SettingScreen from "./component/Setting";
 import editProfile from "./component/setting/editProfile";
 import InfoScreen from "./component/SubInfo";
+import CurrencyScreen from "./component/setting/CurrencyScreen";
 
 import { UserProvider } from "./component/UserContext";
 const Stack = createStackNavigator();
@@ -57,13 +58,18 @@ function App() {
             component={editProfile}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="Currency"
+            component={CurrencyScreen}
+            options={{ headerShown: false }}
+          />
 
           <Stack.Screen
             name="BottomBar"
             component={BottomBarNavigator}
             options={{ headerShown: false }}
           />
-          <Stack.Group screenOptions={{presentation : "modal"}}>
+          <Stack.Group screenOptions={{ presentation: "modal" }}>
             <Stack.Screen
               name="Info"
               component={InfoScreen}
