@@ -93,6 +93,7 @@ export default AddItem = ({ navigation }) => {
     "Entertainment",
     "Security",
     "Education",
+    "Communication",
   ];
 
   const handleViewableItemsChanged = (viewableItems) => {
@@ -100,11 +101,9 @@ export default AddItem = ({ navigation }) => {
     // console.log("viewable items in additem.js:", viewableItems);
   };
   useEffect(() => {
-  
     if (items.length != 0) {
       setSubName(items[0].item.title);
     }
- 
   }, [items]);
 
   const onHandleAdd = async () => {
@@ -155,7 +154,10 @@ export default AddItem = ({ navigation }) => {
       </View>
 
       <Slider onViewableItemsChanged={handleViewableItemsChanged} />
-
+      <View style={styles.inputitems}>
+        <Text style={styles.subhead}>Category</Text>
+        <DropDown setCategory={setCategory} categorys={categoryData} />
+      </View>
       <View style={styles.inputitems}>
         <Text style={styles.subhead}>Description</Text>
         <TextInput
@@ -167,10 +169,6 @@ export default AddItem = ({ navigation }) => {
           value={description}
           onChangeText={(text) => setDescripton(text)}
         />
-      </View>
-      <View style={styles.inputitems}>
-        <Text style={styles.subhead}>Category</Text>
-        <DropDown setCategory={setCategory} categorys={categoryData} />
       </View>
 
       <View style={styles.inputitems}>

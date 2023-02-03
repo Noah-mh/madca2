@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet, StatusBar } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, StatusBar, Alert } from 'react-native';
 // ico
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,7 +19,7 @@ export default RegisterScreen1 = ({ navigation }) => {
           color='white'
           backgroundColor='black'
           marginBottom={25}
-          onPress={() => navigation.navigate('BottomBar')}></SecondCustomButton>
+          onPress={() =>  Alert.alert('This function is not finished')}></SecondCustomButton>
         <SecondCustomButton
         icon='logo-google'
           iconColor='black'
@@ -27,7 +27,7 @@ export default RegisterScreen1 = ({ navigation }) => {
           color='black'
           backgroundColor='white'
           marginBottom={25}
-          onPress={() => navigation.navigate('BottomBar')}></SecondCustomButton>
+          onPress={() =>  Alert.alert('This function is not finished')}></SecondCustomButton>
         <SecondCustomButton
         icon='logo-facebook'
           iconColor='white'
@@ -35,7 +35,7 @@ export default RegisterScreen1 = ({ navigation }) => {
           color='white'
           backgroundColor='#1771E6'
           marginBottom={25}
-          onPress={() => navigation.navigate('BottomBar')}></SecondCustomButton>
+          onPress={() =>  Alert.alert('This function is not finished')}></SecondCustomButton>
         <Text style={{ color: 'white', marginTop: 30, marginBottom: 40 }}>
           or
         </Text>
