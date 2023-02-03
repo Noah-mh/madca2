@@ -72,6 +72,7 @@ export default HomeYourSub = ({ navigation }) => {
     const calculateTotal = subscription.reduce((total, subscription) => {
       return total + parseFloat(subscription.cost);
     }, 0);
+    // console.log("calculateTotal", calculateTotal);
     setTotalCost(calculateTotal.toFixed(2));
 
     const costs = subscription.map((item) => parseFloat(item.cost));
@@ -89,7 +90,7 @@ export default HomeYourSub = ({ navigation }) => {
       (totalCost / parseFloat(data.budget)) *
       75
     ).toFixed(2);
-
+      // console.log(calculateCostStrength)
     setCostStrength(calculateCostStrength);
   }, [totalCost]);
 

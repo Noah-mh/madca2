@@ -12,17 +12,137 @@ import {
   Dimensions,
   TextInput,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default CurrencyScreen = ({ navigation }) => {
-  const [newUsername, setNewUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(1);
 
   const { user, data, setUser } = useContext(UserContext);
-
+  const handlePress = (index) => {
+    setSelectedIndex(index);
+  };
   return (
     <SafeAreaView style={styles.container}>
-      
+      <View>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Default Currency</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => navigation.navigate("Setting")}
+        >
+          <Ionicons
+            style={styles.icon}
+            name="chevron-back-outline"
+            size="30"
+            color="#A2A2B5"
+          />
+        </TouchableOpacity>
+        <View
+          style={{
+            padding: 10,
+            marginTop: 25,
+            marginLeft: 15,
+            alignItems: "left",
+            justifyContent: "center",
+          }}
+        >
+          <View style={styles.categoryBox}>
+            <TouchableOpacity
+              style={{
+                padding: 20,
+                flexDirection: "row",
+                borderBottomWidth: 2,
+              }}
+              onPress={() => handlePress(0)}
+            >
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "90%",
+                }}
+              >
+                <Text style={styles.categoryText1}>
+                  United States dollar ( $USD )
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  width: "5%",
+                  alignItems: "right",
+                  justifyContent: "center",
+                }}
+              >
+                {selectedIndex === 0 ? (
+                  <Ionicons name="checkmark" size="20" color="#A2A2B5" />
+                ) : null}
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 20,
+                flexDirection: "row",
+                borderBottomWidth: 2,
+              }}
+              onPress={() => handlePress(1)}
+            >
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "90%",
+                }}
+              >
+                <Text style={styles.categoryText1}>
+                  Singapore dollar ( $SGD )
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  width: "5%",
+                  alignItems: "right",
+                  justifyContent: "center",
+                }}
+              >
+                {selectedIndex === 1 ? (
+                  <Ionicons name="checkmark" size="20" color="#A2A2B5" />
+                ) : null}
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ padding: 20, flexDirection: "row" }}
+              onPress={() => handlePress(2)}
+            >
+              <View
+                style={{
+                  alignItems: "left",
+                  justifyContent: "center",
+                  width: "90%",
+                }}
+              >
+                <Text style={styles.categoryText1}>
+                  Australian dollar ( $AUD )
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  width: "5%",
+                  alignItems: "right",
+                  justifyContent: "center",
+                }}
+              >
+                {selectedIndex === 2 ? (
+                  <Ionicons name="checkmark" size="20" color="#A2A2B5" />
+                ) : null}
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -50,9 +170,10 @@ const styles = StyleSheet.create({
 
   categoryText1: {
     fontWeight: "bold",
+    fontSize: 14,
     color: "white",
-    marginLeft: 15,
-    textAlign: "left",
+    marginLeft: 10,
+    textAlign: "center",
   },
   categoryText2: {
     color: "#A2A2B5",
@@ -61,37 +182,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     alignItems: "right",
     right: 0,
-  },
-  inputitems: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    marginBottom: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  subhead: {
-    color: "white",
-    fontSize: 16,
-    width: "40%",
-  },
-  errorMsg: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    color: "red",
-    margin: 10,
-    textAlign: "left",
-    width: "100%",
-  },
-  input: {
-    borderRadius: 10,
-    borderColor: "white",
-    width: "60%",
-    height: 45,
-    borderBottomWidth: 1,
-    color: "white",
-    fontSize: 18,
-    paddingLeft: 10,
   },
 
   header: {
@@ -105,41 +195,14 @@ const styles = StyleSheet.create({
     fontWeight: "semi-bold",
   },
 
-  cancelContainer: {
+  iconContainer: {
     position: "absolute",
-    top: 15,
+    top: 10,
     left: 20,
   },
-  doneContainer: {
-    position: "absolute",
-    top: 15,
-    right: 20,
-  },
+
   icon: {
     width: 32,
     height: 32,
-  },
-  monthButton: {
-    marginTop: 10,
-    borderRadius: 15,
-    padding: 10,
-    width: 120,
-    borderWidth: 2,
-    alignItems: "center",
-    backgroundColor: "black",
-  },
-
-  bill: {
-    fontWeight: "medium",
-    fontSize: 18,
-    color: "#1778F2",
-    marginTop: 30,
-    textAlign: "center",
-  },
-  line: {
-    padding: 10,
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-    marginVertical: 10,
   },
 });
