@@ -64,8 +64,6 @@ export default HomeYourSub = ({ navigation }) => {
     // setSubscription(data.subscriptions);
   }, [user]);
 
- 
-
   useEffect(() => {
     if (!subscription) {
       return;

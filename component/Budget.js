@@ -75,7 +75,7 @@ export default Budget = ({ navigation }) => {
       totalCost += costArray[i].cost;
       costStrength[costArray.length - 1 - i] = {
         category: costArray[i].category,
-        cost: costArray[i].cost,
+        cost: costArray[i].cost.toFixed(2),
         costStrength: (totalCost / data.budget).toFixed(2),
         costLineStrength: (costArray[i].cost / data.budget).toFixed(2),
       };
