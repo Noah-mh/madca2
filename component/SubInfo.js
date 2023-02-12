@@ -24,7 +24,17 @@ export default SubInfo = ({ navigation, route }) => {
     "YouTube Premium": require("../assets/YTPremiumBiggerLogo.jpg"),
     "Microsoft One Drive": require("../assets/OneDriveBiggerLogo.png"),
     Netflix: require("../assets/NetflixBiggerLogo.jpeg"),
-    "HBO Go": require("../assets/HBOGOLogo.png"),
+    "Simply Go": require("../assets/simplyGo.png"),
+    "Apple Music": require("../assets/appleMusic.jpg"),
+    Discord: require("../assets/discord.png"),
+    Zoom: require("../assets/zoom.png"),
+    Hulu: require("../assets/hulu.jpg"),
+    Tinder: require("../assets/tinder.webp"),
+    "Disney Plus": require("../assets/disneyPlus.png"),
+    "Office 365": require("../assets/office365.png"),
+    Crunchyroll: require("../assets/crunchyroll.png"),
+    "Amazon Prime": require("../assets/amazonPrime.png"),
+    "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
 
   const onHandleDelete = async () => {

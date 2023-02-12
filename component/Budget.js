@@ -32,7 +32,7 @@ export default Budget = ({ navigation }) => {
     Security: { icon: "finger-print", lineColor: "#AD7BFF" },
     Entertainment: { icon: "headset", lineColor: "#00FAD9" },
     Education: { icon: "book", lineColor: "#FFA699" },
-    Communication: { icon: "chatbubbles-outline", lineColor: "#FFA699" },
+    Communication: { icon: "chatbubbles-outline", lineColor: "#F06A99" },
 
   };
 

@@ -118,9 +118,7 @@ export default Calendar = ({ navigation }) => {
   }, [match]);
 
   const matchingSubscriptions = subscription.filter((subscription) => {
-    return (
-      activeDate.date === subscription.timestamp.toDate().getDate() 
-    );
+    return activeDate.date === subscription.timestamp.toDate().getDate();
   });
   useEffect(() => {
     setMatch(matchingSubscriptions);
@@ -132,6 +130,16 @@ export default Calendar = ({ navigation }) => {
     "YouTube Premium": require("../assets/YTPremiumLogo.png"),
     "Microsoft One Drive": require("../assets/OneDriveLogo.png"),
     Netflix: require("../assets/NetflixLogo.png"),
+    "Simply Go": require("../assets/simplyGo.png"),
+    "Apple Music": require("../assets/appleMusic.jpg"),
+    Discord: require("../assets/discord.png"),
+    Zoom: require("../assets/zoom.png"),
+    Hulu: require("../assets/hulu.jpg"),
+    Tinder: require("../assets/tinder.webp"),
+    "Disney Plus": require("../assets/disneyPlus.png"),
+    "Office 365": require("../assets/office365.png"),
+    Crunchyroll: require("../assets/crunchyroll.png"),
+    "Amazon Prime": require("../assets/amazonPrime.png"),
     "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
 
@@ -277,7 +285,10 @@ export default Calendar = ({ navigation }) => {
                           navigation.navigate("Info", { item: item });
                         }}
                       >
-                        <Image source={imageMapping[item.subName]}></Image>
+                        <Image
+                          style={{ width: 40, height: 40, borderRadius: 10 }}
+                          source={imageMapping[item.subName]}
+                        ></Image>
                         <Text style={styles.subscriptionText1}>
                           {item.subName}
                         </Text>

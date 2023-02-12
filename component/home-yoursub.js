@@ -36,6 +36,16 @@ export default HomeYourSub = ({ navigation }) => {
     "YouTube Premium": require("../assets/YTPremiumLogo.png"),
     "Microsoft One Drive": require("../assets/OneDriveLogo.png"),
     Netflix: require("../assets/NetflixLogo.png"),
+    "Simply Go": require("../assets/simplyGo.png"),
+    "Apple Music": require("../assets/appleMusic.jpg"),
+    Discord: require("../assets/discord.png"),
+    Zoom: require("../assets/zoom.png"),
+    Hulu: require("../assets/hulu.jpg"),
+    Tinder: require("../assets/tinder.webp"),
+    "Disney Plus": require("../assets/disneyPlus.png"),
+    "Office 365": require("../assets/office365.png"),
+    Crunchyroll: require("../assets/crunchyroll.png"),
+    "Amazon Prime": require("../assets/amazonPrime.png"),
     "HBO Go": require("../assets/HBOGOsmallLogo.png"),
   };
 
@@ -90,7 +100,7 @@ export default HomeYourSub = ({ navigation }) => {
       (totalCost / parseFloat(data.budget)) *
       75
     ).toFixed(2);
-      // console.log(calculateCostStrength)
+    // console.log(calculateCostStrength)
     setCostStrength(calculateCostStrength);
   }, [totalCost]);
 
@@ -215,7 +225,10 @@ export default HomeYourSub = ({ navigation }) => {
                             },
                           ]}
                         >
-                          <Image source={imageMapping[item.subName]}></Image>
+                          <Image
+                            style={{ width: 40, height: 40, borderRadius: 10 }}
+                            source={imageMapping[item.subName]}
+                          ></Image>
                           <Text style={styles.subscriptionText1}>
                             {item.subName}
                           </Text>
