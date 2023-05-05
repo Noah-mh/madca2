@@ -58,8 +58,13 @@ export default HomeUpcomingBill = ({ navigation }) => {
     setCostStrength(calculateCostStrength);
   }, [totalCost]);
   const today = new Date();
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1);
-  const month = nextMonth.toLocaleString('default', { month: 'short' });
+  const nextMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1
+  );
+  const month = nextMonth.toLocaleString("default", {
+    month: "short",
+  });
   return (
     <SafeAreaView style={styles.container}>
       {/* {loading ? (
@@ -182,9 +187,7 @@ export default HomeUpcomingBill = ({ navigation }) => {
                       ]}
                     >
                       <View style={styles.subscriptionDate}>
-                        <Text style={{ color: "#fff" }}>
-                          {month}
-                        </Text>
+                        <Text style={{ color: "#fff" }}>{month}</Text>
                         <Text style={styles.textInsideBox}>
                           {String(
                             item.timestamp.toDate().getDate()
