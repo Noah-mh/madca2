@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+} from "react";
 import {
   Alert,
   SafeAreaView,
@@ -17,7 +22,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { UserContext } from "./UserContext";
 
 import Loading from "./Loading";
-import getYearlyCalendar, { getMonthlyCalendar } from "./YearlyCalendar";
+import getYearlyCalendar, {
+  getMonthlyCalendar,
+} from "./YearlyCalendar";
 const { width } = Dimensions.get("screen");
 
 const DropDown = ({ setMonth, months }) => {
@@ -57,7 +64,11 @@ const DropDown = ({ setMonth, months }) => {
               }}
             >
               <Text
-                style={{ fontWeight: "bold", color: "white", marginRight: 3 }}
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  marginRight: 3,
+                }}
               >
                 {month}
               </Text>
@@ -68,8 +79,48 @@ const DropDown = ({ setMonth, months }) => {
     </View>
   );
 };
+
+const ListItem = React.memo(
+  ({ item, index, navigation, imageMapping, matchLength }) => {
+    return (
+      <View
+        style={
+          matchLength > 1
+            ? [
+                styles.subscriptionsBox,
+                { marginLeft: index % 2 === 0 ? 10 : 12},
+              ]
+            : {
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 5,
+                marginLeft: 12,
+                width: 200,
+                height: 200,
+              }
+        }
+      >
+        <TouchableOpacity
+          style={styles.subBox}
+          onPress={() => {
+            navigation.navigate("Info", { item: item });
+          }}
+        >
+          <Image
+            style={{ width: 90, height: 90, borderRadius: 17 }}
+            source={imageMapping[item.subName]}
+          ></Image>
+          <Text style={styles.subscriptionText1}>{item.subName}</Text>
+          <Text style={styles.subscriptionText2}>${item.cost}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+);
+
 export default Calendar = ({ navigation }) => {
-  const { user, subscription, setSubscription } = useContext(UserContext);
+  const { user, subscription, setSubscription } =
+    useContext(UserContext);
   const today = new Date();
   const [month, setMonth] = useState(
     today.toLocaleString("default", { month: "long" })
@@ -91,7 +142,9 @@ export default Calendar = ({ navigation }) => {
       ? months.indexOf(activeDate.month) + 1
       : today.getMonth() + 1
   ).padStart(2, "0");
-  const year = activeDate.year ? activeDate.year : today.getFullYear();
+  const year = activeDate.year
+    ? activeDate.year
+    : today.getFullYear();
 
   const formattedDate = `${day}.${monthss}.${year}`;
 
@@ -117,12 +170,15 @@ export default Calendar = ({ navigation }) => {
     setTotalCost(calculateTotal.toFixed(2));
   }, [match]);
 
-  const matchingSubscriptions = subscription.filter((subscription) => {
-    return activeDate.date === subscription.timestamp.toDate().getDate();
-  });
+  const matchingSubscriptions = subscription.filter(
+    (subscription) => {
+      return (
+        activeDate.date === subscription.timestamp.toDate().getDate()
+      );
+    }
+  );
   useEffect(() => {
     setMatch(matchingSubscriptions);
-    console.log(matchingSubscriptions);
   }, [activeDate]);
 
   const imageMapping = {
@@ -150,6 +206,7 @@ export default Calendar = ({ navigation }) => {
         <View style={styles.header}>
           <Text style={styles.headerText}>Calendar</Text>
         </View>
+        {/* to navigate to setting */}
         <TouchableOpacity
           style={styles.iconContainer}
           onPress={() => navigation.navigate("Setting")}
@@ -161,7 +218,13 @@ export default Calendar = ({ navigation }) => {
             color="#A2A2B5"
           />
         </TouchableOpacity>
-        <View style={{ marginTop: 50, marginLeft: 25, alignItems: "left" }}>
+        <View
+          style={{
+            marginTop: 50,
+            marginLeft: 25,
+            alignItems: "left",
+          }}
+        >
           <View style={{ alignItems: "left" }}>
             <Text style={styles.bill}>Subs</Text>
             <Text style={styles.bill}>Schedule</Text>
@@ -178,12 +241,19 @@ export default Calendar = ({ navigation }) => {
               marginTop: 20,
             }}
           >
-            <Text style={{ fontSize: 15, color: "#83839C", width: "70%" }}>
+            <Text
+              style={{ fontSize: 15, color: "#83839C", width: "70%" }}
+            >
               {match.length} subscriptions for today
             </Text>
           </View>
           <View
-            style={{ position: "absolute", right: 125, top: 10, zIndex: 10000 }}
+            style={{
+              position: "absolute",
+              right: 125,
+              top: 10,
+              zIndex: 10000,
+            }}
           >
             <DropDown
               style={styles.monthButton}
@@ -201,7 +271,9 @@ export default Calendar = ({ navigation }) => {
                 key={index}
                 style={[
                   styles.box,
-                  date.date === activeDate.date ? styles.activeDateBox : null,
+                  date.date === activeDate.date
+                    ? styles.activeDateBox
+                    : null,
                 ]}
                 onPress={() => {
                   setActiveDate(date);
@@ -211,7 +283,9 @@ export default Calendar = ({ navigation }) => {
                 <Text
                   style={[
                     styles.day,
-                    date.date === activeDate.date ? styles.activeDay : null,
+                    date.date === activeDate.date
+                      ? styles.activeDay
+                      : null,
                   ]}
                 >
                   {date.dayOfWeek}
@@ -223,10 +297,16 @@ export default Calendar = ({ navigation }) => {
               </TouchableOpacity>
             ))}
           </ScrollView>
-          <View style={[styles.organiseBox, { marginTop: 40 }]}>
+          <View style={styles.organiseBox}>
             <View style={{ justifyContent: "left", width: "65%" }}>
               <Text style={styles.textInsideBox}>{month}</Text>
-              <Text style={{ fontSize: 13, color: "#83839C", marginTop: 5 }}>
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: "#83839C",
+                  marginTop: 5,
+                }}
+              >
                 {formattedDate}
               </Text>
             </View>
@@ -237,7 +317,9 @@ export default Calendar = ({ navigation }) => {
                 width: "25%",
               }}
             >
-              <Text style={[styles.textInsideBox, { textAlign: "right" }]}>
+              <Text
+                style={[styles.textInsideBox, { textAlign: "right" }]}
+              >
                 ${totalCost}
               </Text>
               <Text
@@ -256,7 +338,7 @@ export default Calendar = ({ navigation }) => {
           <View
             style={{
               marginTop: 20,
-              alignItems: "center",
+              alignItems: "left",
               justifyContent: "center",
               zIndex: -1,
               width: width,
@@ -266,39 +348,15 @@ export default Calendar = ({ navigation }) => {
               <FlatList
                 numColumns={2}
                 data={match}
-                renderItem={({ item, index }) => {
-                  return (
-                    <View
-                      style={[
-                        styles.organiseBox,
-                        {
-                          marginTop: 5,
-                          marginLeft: index % 2 === 0 ? 7 : 10,
-                          width: "47%",
-                          height: 200,
-                        },
-                      ]}
-                    >
-                      <TouchableOpacity
-                        style={styles.subBox}
-                        onPress={() => {
-                          navigation.navigate("Info", { item: item });
-                        }}
-                      >
-                        <Image
-                          style={{ width: 40, height: 40, borderRadius: 10 }}
-                          source={imageMapping[item.subName]}
-                        ></Image>
-                        <Text style={styles.subscriptionText1}>
-                          {item.subName}
-                        </Text>
-                        <Text style={styles.subscriptionText2}>
-                          ${item.cost}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                }}
+                renderItem={({ item, index }) => (
+                  <ListItem
+                    item={item}
+                    index={index}
+                    navigation={navigation}
+                    imageMapping={imageMapping}
+                    matchLength={match.length}
+                  />
+                )}
               />
             </View>
           </View>
@@ -388,7 +446,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "top",
-    width: 50,
+    width: 53,
     height: 110,
     backgroundColor: "#4E4E61",
     marginRight: 12,
@@ -411,6 +469,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: width,
     flexDirection: "row",
+    marginTop: 40,
+  },
+  subscriptionsBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: width,
+    flexDirection: "row",
+    marginTop: 5,
+
+    width: "47%",
+    height: 200,
   },
 
   textInsideBox: {
@@ -423,16 +492,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,
-    alignItems: "left",
+    alignItems: "center",
     width: "100%",
     height: 200,
     backgroundColor: "#4E4E61",
   },
 
   subscriptionText1: {
-    marginTop: 95,
+    marginTop: 40,
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
   },
 
   subscriptionText2: {
