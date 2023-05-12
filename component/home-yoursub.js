@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import {
   SafeAreaView,
   View,
@@ -20,34 +20,59 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 import Loading from "./Loading";
 
+const imageMapping = {
+  Spotify: require("../assets/SpotifyLogo.png"),
+  "YouTube Premium": require("../assets/YTPremiumLogo.png"),
+  "Microsoft One Drive": require("../assets/OneDriveLogo.png"),
+  Netflix: require("../assets/NetflixLogo.png"),
+  "Simply Go": require("../assets/simplyGo.png"),
+  "Apple Music": require("../assets/appleMusic.jpg"),
+  Discord: require("../assets/discord.png"),
+  Zoom: require("../assets/zoom.png"),
+  Hulu: require("../assets/hulu.jpg"),
+  Tinder: require("../assets/tinder.webp"),
+  "Disney Plus": require("../assets/disneyPlus.png"),
+  "Office 365": require("../assets/office365.png"),
+  Crunchyroll: require("../assets/crunchyroll.png"),
+  "Amazon Prime": require("../assets/amazonPrime.png"),
+  "HBO Go": require("../assets/HBOGOsmallLogo.png"),
+};
+
+const ListItem = React.memo(({ item, navigation, imageMapping }) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("Info", { item: item });
+      }}
+    >
+      <View
+        style={[
+          styles.subscriptionBox,
+          {
+            flexDirection: "row",
+            marginTop: 15,
+            backgroundColor: "#353542",
+          },
+        ]}
+      >
+        <Image
+          style={{ width: 40, height: 40, borderRadius: 10 }}
+          source={imageMapping[item.subName]}
+        ></Image>
+        <Text style={styles.subscriptionText1}>{item.subName}</Text>
+        <Text style={styles.subscriptionText2}>${item.cost}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+});
+
 export default HomeYourSub = ({ navigation }) => {
   const { user, data, setData, subscription, setSubscription } =
     useContext(UserContext);
 
-  const [totalCost, setTotalCost] = useState(0);
-  const [highest, setHighest] = useState(0);
-  const [lowest, setLowest] = useState(0);
   const [costStrength, setCostStrength] = useState(0);
 
   const [loading, setLoading] = useState(true);
-
-  const imageMapping = {
-    Spotify: require("../assets/SpotifyLogo.png"),
-    "YouTube Premium": require("../assets/YTPremiumLogo.png"),
-    "Microsoft One Drive": require("../assets/OneDriveLogo.png"),
-    Netflix: require("../assets/NetflixLogo.png"),
-    "Simply Go": require("../assets/simplyGo.png"),
-    "Apple Music": require("../assets/appleMusic.jpg"),
-    Discord: require("../assets/discord.png"),
-    Zoom: require("../assets/zoom.png"),
-    Hulu: require("../assets/hulu.jpg"),
-    Tinder: require("../assets/tinder.webp"),
-    "Disney Plus": require("../assets/disneyPlus.png"),
-    "Office 365": require("../assets/office365.png"),
-    Crunchyroll: require("../assets/crunchyroll.png"),
-    "Amazon Prime": require("../assets/amazonPrime.png"),
-    "HBO Go": require("../assets/HBOGOsmallLogo.png"),
-  };
 
   const getUserData = async () => {
     try {
@@ -74,24 +99,34 @@ export default HomeYourSub = ({ navigation }) => {
     // setSubscription(data.subscriptions);
   }, [user]);
 
-  useEffect(() => {
+  const totalCost = useMemo(() => {
     if (!subscription) {
-      return;
+      return 0;
     }
-
     const calculateTotal = subscription.reduce((total, subscription) => {
       return total + parseFloat(subscription.cost);
     }, 0);
-    // console.log("calculateTotal", calculateTotal);
-    setTotalCost(calculateTotal.toFixed(2));
-
-    const costs = subscription.map((item) => parseFloat(item.cost));
-    const maxCost = Math.max(...costs);
-    setHighest(maxCost);
-    const minCost = Math.min(...costs);
-    setLowest(minCost);
+    return calculateTotal.toFixed(2);
   }, [subscription]);
+  
+  const highest = useMemo(() => {
+    if (!subscription || !subscription.length) {
+      return 0;
+    }
+    const costs = subscription.map((item) => parseFloat(item.cost));
+    return Math.max(...costs);
+  }, [subscription]);
+  
+  const lowest = useMemo(() => {
+    if (!subscription || !subscription.length) {
+      return 0;
+    }
+    const costs = subscription.map((item) => parseFloat(item.cost));
+    return Math.min(...costs);
+  }, [subscription]);
+  
 
+ 
   useEffect(() => {
     if (!data) {
       return;
@@ -208,37 +243,13 @@ export default HomeYourSub = ({ navigation }) => {
               <View style={{ maxHeight: 250 }}>
                 <FlatList
                   data={subscription}
-                  renderItem={({ item }) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigation.navigate("Info", { item: item });
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.subscriptionBox,
-                            {
-                              flexDirection: "row",
-                              marginTop: 15,
-                              backgroundColor: "#353542",
-                            },
-                          ]}
-                        >
-                          <Image
-                            style={{ width: 40, height: 40, borderRadius: 10 }}
-                            source={imageMapping[item.subName]}
-                          ></Image>
-                          <Text style={styles.subscriptionText1}>
-                            {item.subName}
-                          </Text>
-                          <Text style={styles.subscriptionText2}>
-                            ${item.cost}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  }}
+                  renderItem={({ item }) => (
+                    <ListItem
+                      item={item}
+                      navigation={navigation}
+                      imageMapping={imageMapping}
+                    />
+                  )}
                 />
               </View>
             )}

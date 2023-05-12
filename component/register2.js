@@ -6,8 +6,9 @@ import {
   TextInput,
   StyleSheet,
   StatusBar,
-  AsyncStorage,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";

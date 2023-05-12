@@ -15,27 +15,27 @@ import { db } from "../firebase";
 import { doc, updateDoc, arrayRemove } from "firebase/firestore";
 
 import CustomButton from "./CustomButton";
+const imageMapping = {
+  Spotify: require("../assets/SpotifyBiggerLogo.png"),
+  "YouTube Premium": require("../assets/YTPremiumBiggerLogo.jpg"),
+  "Microsoft One Drive": require("../assets/OneDriveBiggerLogo.png"),
+  Netflix: require("../assets/NetflixBiggerLogo.jpeg"),
+  "Simply Go": require("../assets/simplyGo.png"),
+  "Apple Music": require("../assets/appleMusic.jpg"),
+  Discord: require("../assets/discord.png"),
+  Zoom: require("../assets/zoom.png"),
+  Hulu: require("../assets/hulu.jpg"),
+  Tinder: require("../assets/tinder.webp"),
+  "Disney Plus": require("../assets/disneyPlus.png"),
+  "Office 365": require("../assets/office365.png"),
+  Crunchyroll: require("../assets/crunchyroll.png"),
+  "Amazon Prime": require("../assets/amazonPrime.png"),
+  "HBO Go": require("../assets/HBOGOsmallLogo.png"),
+};
 
 export default SubInfo = ({ navigation, route }) => {
   const { item } = route.params;
   const { user } = useContext(UserContext);
-  const imageMapping = {
-    Spotify: require("../assets/SpotifyBiggerLogo.png"),
-    "YouTube Premium": require("../assets/YTPremiumBiggerLogo.jpg"),
-    "Microsoft One Drive": require("../assets/OneDriveBiggerLogo.png"),
-    Netflix: require("../assets/NetflixBiggerLogo.jpeg"),
-    "Simply Go": require("../assets/simplyGo.png"),
-    "Apple Music": require("../assets/appleMusic.jpg"),
-    Discord: require("../assets/discord.png"),
-    Zoom: require("../assets/zoom.png"),
-    Hulu: require("../assets/hulu.jpg"),
-    Tinder: require("../assets/tinder.webp"),
-    "Disney Plus": require("../assets/disneyPlus.png"),
-    "Office 365": require("../assets/office365.png"),
-    Crunchyroll: require("../assets/crunchyroll.png"),
-    "Amazon Prime": require("../assets/amazonPrime.png"),
-    "HBO Go": require("../assets/HBOGOsmallLogo.png"),
-  };
 
   const onHandleDelete = async () => {
     try {
@@ -73,7 +73,10 @@ export default SubInfo = ({ navigation, route }) => {
             color="#A2A2B5"
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.doneContainer} onPress={onHandleDelete}>
+        <TouchableOpacity
+          style={styles.doneContainer}
+          onPress={onHandleDelete}
+        >
           <Ionicons
             style={styles.icon}
             name="trash-outline"
@@ -104,7 +107,9 @@ export default SubInfo = ({ navigation, route }) => {
           }}
         >
           <View style={styles.categoryBox}>
-            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+            <TouchableOpacity
+              style={{ padding: 10, flexDirection: "row" }}
+            >
               <View
                 style={{
                   alignItems: "left",
@@ -121,10 +126,14 @@ export default SubInfo = ({ navigation, route }) => {
                   width: "30%",
                 }}
               >
-                <Text style={styles.categoryText2}>{item.subName}</Text>
+                <Text style={styles.categoryText2}>
+                  {item.subName}
+                </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+            <TouchableOpacity
+              style={{ padding: 10, flexDirection: "row" }}
+            >
               <View
                 style={{
                   alignItems: "left",
@@ -141,10 +150,14 @@ export default SubInfo = ({ navigation, route }) => {
                   width: "30%",
                 }}
               >
-                <Text style={styles.categoryText2}>{item.description}</Text>
+                <Text style={styles.categoryText2}>
+                  {item.description}
+                </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+            <TouchableOpacity
+              style={{ padding: 10, flexDirection: "row" }}
+            >
               <View
                 style={{
                   alignItems: "left",
@@ -161,10 +174,14 @@ export default SubInfo = ({ navigation, route }) => {
                   width: "30%",
                 }}
               >
-                <Text style={styles.categoryText2}>{item.category}</Text>
+                <Text style={styles.categoryText2}>
+                  {item.category}
+                </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+            <TouchableOpacity
+              style={{ padding: 10, flexDirection: "row" }}
+            >
               <View
                 style={{
                   alignItems: "left",
@@ -184,7 +201,9 @@ export default SubInfo = ({ navigation, route }) => {
                 <Text style={styles.categoryText2}>Never</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 10, flexDirection: "row" }}>
+            <TouchableOpacity
+              style={{ padding: 10, flexDirection: "row" }}
+            >
               <View
                 style={{
                   alignItems: "left",
