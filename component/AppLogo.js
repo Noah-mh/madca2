@@ -12,7 +12,7 @@ export default function AppLogo() {
       }}>
       <Image
         style={styles.appLogo}
-        source={require('../assets/appLogo.png')}></Image>
+        source={require('../assets/appLogo.jpeg')}></Image>
       <Text style={styles.appName}>SUBSTRACK</Text>
     </View>
   );
