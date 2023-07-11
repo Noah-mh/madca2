@@ -7,8 +7,6 @@ import {
   StyleSheet,
   StatusBar,
 } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";
@@ -20,7 +18,6 @@ import { doc, setDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-
 } from "firebase/auth";
 
 const auth = getAuth(firebaseapp);
@@ -56,7 +53,7 @@ export default RegisterScreen2 = ({ navigation }) => {
           setDoc(doc(db, "userData", userinfo.uid), {
             username: username,
             subscriptions: [],
-            budget: "500"
+            budget: "500",
           });
           navigation.navigate("BottomBar");
         })
@@ -186,7 +183,9 @@ export default RegisterScreen2 = ({ navigation }) => {
           marginBottom={25}
           onPress={onHandleSignUp}
         ></CustomButton>
-        <Text style={{ color: "white", marginTop: 30, marginBottom: 40 }}>
+        <Text
+          style={{ color: "white", marginTop: 30, marginBottom: 40 }}
+        >
           Do you have already an account?
         </Text>
         <CustomButton
