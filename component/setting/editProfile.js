@@ -20,7 +20,7 @@ import {
 } from "../../firebase/firebaseOperation";
 
 export default EditProfile = ({ navigation }) => {
-  const [newUsername, setNewUsername] = useState("");
+  const [newUsername, setNewUsername] = useState(username);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -56,8 +56,7 @@ export default EditProfile = ({ navigation }) => {
         await updateUserPassword(password);
 
         const userCredential = await signInUser(email, password);
-        const userinfo = userCredential.user;
-        updateUserData(userinfo);
+        setUser(userCredential.user);
         alert("Update Okay!");
         navigation.navigate("Setting");
       } else if (password !== confirmPassword) {
