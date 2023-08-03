@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import {
   Alert,
   SafeAreaView,
@@ -134,6 +139,7 @@ export default Calendar = ({ navigation }) => {
   const { user, subscription, setSubscription } =
     useContext(UserContext);
   const today = new Date();
+  const scrollViewRef = useRef(null);
   const [month, setMonth] = useState(
     today.toLocaleString("default", { month: "long" })
   );
@@ -267,15 +273,26 @@ export default Calendar = ({ navigation }) => {
           </View>
 
           <ScrollView
+            ref={scrollViewRef}
             style={{ marginLeft: 25, marginTop: 30 }}
             horizontal={true}
           >
             {dateList.map((date, index) => (
               <TouchableOpacity
                 key={index}
+                onLayout={(event) => {
+                  if (date.date === activeDate.getDate()) {
+                    scrollViewRef.current.scrollTo({
+                      x:
+                        event.nativeEvent.layout.x -
+                        Dimensions.get("window").width / 4,
+                      animated: true,
+                    });
+                  }
+                }}
                 style={[
                   styles.box,
-                  date.date === activeDate.date
+                  date.date === activeDate.getDate()
                     ? styles.activeDateBox
                     : null,
                 ]}
@@ -287,7 +304,7 @@ export default Calendar = ({ navigation }) => {
                 <Text
                   style={[
                     styles.day,
-                    date.date === activeDate.date
+                    date.date === activeDate.getDate()
                       ? styles.activeDay
                       : null,
                   ]}
@@ -295,7 +312,7 @@ export default Calendar = ({ navigation }) => {
                   {date.dayOfWeek}
                 </Text>
 
-                {date.date === activeDate.date ? (
+                {date.date === activeDate.getDate() ? (
                   <View style={styles.active}></View>
                 ) : null}
               </TouchableOpacity>
