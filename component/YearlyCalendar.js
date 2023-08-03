@@ -27,6 +27,4 @@ const getYearlyCalendar = (year) => {
   return calendar;
 };
 
-
-
-export {getYearlyCalendar as default, getMonthlyCalendar}
+export { getYearlyCalendar as default, getMonthlyCalendar };

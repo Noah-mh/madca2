@@ -1,24 +1,34 @@
-import React from 'react';
-import { SafeAreaView, View, Image, StyleSheet, StatusBar } from 'react-native';
+import React from "react";
+import {
+  SafeAreaView,
+  View,
+  Image,
+  StyleSheet,
+  StatusBar,
+} from "react-native";
 
-import AppLogo from './AppLogo';
-import CustomButton from './CustomButton';
+import AppLogo from "./AppLogo";
+import CustomButton from "./CustomButton";
 
 const WelcomeImage = () => {
   return (
-    <View style={{ position: 'absolute', marginTop: 100 }}>
+    <View style={{ position: "absolute", marginTop: 100 }}>
       <Image
         style={[styles.logo, styles.logo1]}
-        source={require('../assets/netflix.png')}></Image>
+        source={require("../assets/netflix.png")}
+      ></Image>
       <Image
         style={[styles.logo, styles.logo2]}
-        source={require('../assets/youtube.png')}></Image>
+        source={require("../assets/youtube.png")}
+      ></Image>
       <Image
         style={[styles.logo, styles.logo3]}
-        source={require('../assets/oneDrive.png')}></Image>
+        source={require("../assets/oneDrive.png")}
+      ></Image>
       <Image
         style={[styles.logo, styles.logo4]}
-        source={require('../assets/spotify.png')}></Image>
+        source={require("../assets/spotify.png")}
+      ></Image>
     </View>
   );
 };
@@ -28,19 +38,21 @@ export default WelcomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <AppLogo />
       <WelcomeImage />
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: "center" }}>
         <CustomButton
           text="Get Started"
-          color='white'
-          backgroundColor='red'
+          color="white"
+          backgroundColor="red"
           marginBottom={30}
-          onPress={() => navigation.navigate('Register1')}></CustomButton>
+          onPress={() => navigation.navigate("Register1")}
+        ></CustomButton>
         <CustomButton
           text="I have an account"
           color="white"
           backgroundColor="#666680"
           marginBottom={60}
-            onPress={() => navigation.navigate('SignIn')}></CustomButton>
+          onPress={() => navigation.navigate("SignInWithProvider")}
+        ></CustomButton>
       </View>
     </SafeAreaView>
   );
@@ -49,14 +61,14 @@ export default WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    width: '100%',
-    backgroundColor: '#1C1C23',
+    justifyContent: "space-between",
+    width: "100%",
+    backgroundColor: "#1C1C23",
     marginTop: StatusBar.currentHeight || 0,
   },
 
   logo: {
-    position: 'absolute',
+    position: "absolute",
   },
 
   logo1: {

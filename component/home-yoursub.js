@@ -1,4 +1,9 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   SafeAreaView,
   View,
@@ -103,12 +108,15 @@ export default HomeYourSub = ({ navigation }) => {
     if (!subscription) {
       return 0;
     }
-    const calculateTotal = subscription.reduce((total, subscription) => {
-      return total + parseFloat(subscription.cost);
-    }, 0);
+    const calculateTotal = subscription.reduce(
+      (total, subscription) => {
+        return total + parseFloat(subscription.cost);
+      },
+      0
+    );
     return calculateTotal.toFixed(2);
   }, [subscription]);
-  
+
   const highest = useMemo(() => {
     if (!subscription || !subscription.length) {
       return 0;
@@ -116,7 +124,7 @@ export default HomeYourSub = ({ navigation }) => {
     const costs = subscription.map((item) => parseFloat(item.cost));
     return Math.max(...costs);
   }, [subscription]);
-  
+
   const lowest = useMemo(() => {
     if (!subscription || !subscription.length) {
       return 0;
@@ -124,9 +132,7 @@ export default HomeYourSub = ({ navigation }) => {
     const costs = subscription.map((item) => parseFloat(item.cost));
     return Math.min(...costs);
   }, [subscription]);
-  
 
- 
   useEffect(() => {
     if (!data) {
       return;

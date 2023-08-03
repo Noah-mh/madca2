@@ -7,7 +7,7 @@ import WelcomeScreen from "./component/WelcomeScreen";
 import SignInScreen from "./component/SignIn";
 import RegisterScreen1 from "./component/register1";
 import RegisterScreen2 from "./component/register2";
-
+import SignInWithProviderScreen from "./component/SignInWithProvider";
 import SettingScreen from "./component/Setting";
 import EditProfile from "./component/setting/EditProfile";
 import InfoScreen from "./component/SubInfo";
@@ -32,6 +32,10 @@ function App() {
           <Stack.Screen
             name="Register2"
             component={RegisterScreen2}
+          />
+          <Stack.Screen
+            name="SignInWithProvider"
+            component={SignInWithProviderScreen}
           />
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="Setting" component={SettingScreen} />

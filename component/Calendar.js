@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Alert,
   SafeAreaView,
@@ -104,7 +100,7 @@ const ListItem = React.memo(
           matchLength > 1
             ? [
                 styles.subscriptionsBox,
-                { marginLeft: index % 2 === 0 ? 10 : 12},
+                { marginLeft: index % 2 === 0 ? 10 : 12 },
               ]
             : {
                 alignItems: "center",
@@ -177,6 +173,16 @@ export default Calendar = ({ navigation }) => {
   }, [month]);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveDate(new Date());
+    }, 1000 * 60 * 60 * 24); // every 24 hours
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!match) {
       return;
     }
@@ -196,8 +202,6 @@ export default Calendar = ({ navigation }) => {
   useEffect(() => {
     setMatch(matchingSubscriptions);
   }, [activeDate]);
-
-  
 
   return (
     <SafeAreaView style={styles.container}>

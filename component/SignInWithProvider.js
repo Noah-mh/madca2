@@ -16,7 +16,7 @@ import SecondCustomButton from "./secondCustomButton";
 import { firebaseSignInWithGoogle } from "../firebase/firebaseOperation";
 import { UserContext } from "./UserContext";
 
-export default RegisterScreen1 = ({ navigation }) => {
+export default SignInWithProvider = ({ navigation }) => {
   const { setUser } = useContext(UserContext);
 
   const signInWithGoogle = () => {
@@ -30,7 +30,7 @@ export default RegisterScreen1 = ({ navigation }) => {
         <SecondCustomButton
           icon="logo-apple"
           iconColor="white"
-          text="Sign Up with Apple"
+          text="Sign In with Apple"
           color="white"
           backgroundColor="black"
           marginBottom={25}
@@ -39,7 +39,7 @@ export default RegisterScreen1 = ({ navigation }) => {
         <SecondCustomButton
           icon="logo-google"
           iconColor="black"
-          text="Sign Up with Google"
+          text="Sign In with Google"
           color="black"
           backgroundColor="white"
           marginBottom={25}
@@ -48,7 +48,7 @@ export default RegisterScreen1 = ({ navigation }) => {
         <SecondCustomButton
           icon="logo-facebook"
           iconColor="white"
-          text="Sign Up with Facebook"
+          text="Sign In with Facebook"
           color="white"
           backgroundColor="#1771E6"
           marginBottom={25}
@@ -62,11 +62,11 @@ export default RegisterScreen1 = ({ navigation }) => {
         <SecondCustomButton
           icon="mail-outline"
           iconColor="white"
-          text="Sign Up with E-mail"
+          text="Sign In with E-mail"
           color="white"
           backgroundColor="#666680"
           marginBottom={25}
-          onPress={() => navigation.navigate("Register2")}
+          onPress={() => navigation.navigate("SignIn")}
         ></SecondCustomButton>
 
         <Text style={styles.termAndCondition}>

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../UserContext";
 import {
   SafeAreaView,
-  ScrollView,
   View,
   Text,
   Image,
@@ -13,84 +12,72 @@ import {
   TextInput,
 } from "react-native";
 import validatePassword from "../validatePassword";
-import { firebaseapp, db } from "../../firebase";
-import { doc, updateDoc } from "firebase/firestore";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  updateEmail,
-  updatePassword,
-} from "firebase/auth";
-
-const auth = getAuth(firebaseapp);
+  updateUserDocument,
+  updateUserEmail,
+  updateUserPassword,
+  signInUser,
+} from "../../firebase/firebaseOperation";
 
 export default EditProfile = ({ navigation }) => {
   const [newUsername, setNewUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmpassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isPasswordMatch, setIsPasswordMatch] = useState(true);
 
   const { user, data, setUser } = useContext(UserContext);
   const [username, setUsename] = useState(data.username);
 
-  const getUserData = async () => {
-    try {
-      // console.log("Document data:", data);
-      setUsename(data.username);
-    } catch (error) {
-      console.log("Error getting document in edit profile:", error);
-    }
-  };
   useEffect(() => {
-    getUserData();
-    console.log(username)
+    setUsename(data.username);
   }, [user]);
 
-  useEffect(() => {
-    const passwordValidationResult = validatePassword(password);
-    if (!passwordValidationResult.isValid) {
-      setPasswordError(passwordValidationResult.error);
-    } else {
-      setPasswordError("");
-    }
-  });
+  // useEffect(() => {
+  //   const passwordValidationResult = validatePassword(password);
+  //   if (!passwordValidationResult.isValid) {
+  //     setPasswordError(passwordValidationResult.error);
+  //   } else {
+  //     setPasswordError("");
+  //   }
+  // });
 
   const onHandleDone = async () => {
     try {
-      if ((newUsername != "", email != "" && password != "")) {
-        const docRef = doc(db, "userData", user.uid);
-        await updateDoc(docRef, {
-          username: newUsername,
-        });
-        await updateEmail(auth.currentUser, email);
+      if (
+        newUsername &&
+        email &&
+        password &&
+        password === confirmPassword
+      ) {
+        await updateUserDocument(user, newUsername);
+        await updateUserEmail(email);
+        await updateUserPassword(password);
 
-        await updatePassword(auth.currentUser, password);
-
-        signInWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            // Signed in
-            const userinfo = userCredential.user;
-            // ...
-            setUser(userinfo);
-            console.log(user);
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            alert(errorMessage);
-          });
+        const userCredential = await signInUser(email, password);
+        const userinfo = userCredential.user;
+        updateUserData(userinfo);
         alert("Update Okay!");
         navigation.navigate("Setting");
+      } else if (password !== confirmPassword) {
+        alert("Passwords do not match");
       }
-    } catch (e) {
-      console.log("Error adding document: in edit profile", e);
+    } catch (error) {
+      alert(
+        `Error updating document in edit profile: ${error.message}`
+      );
     }
   };
 
   const handlePasswordChange = (text) => {
     setPassword(text);
+    const passwordValidationResult = validatePassword(text);
+    if (!passwordValidationResult.isValid) {
+      setPasswordError(passwordValidationResult.error);
+    } else {
+      setPasswordError("");
+    }
   };
 
   const handleConfirmPasswordChange = (text) => {
@@ -111,7 +98,10 @@ export default EditProfile = ({ navigation }) => {
             <Text style={{ color: "#A2A2B5" }}>cancel</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.doneContainer} onPress={onHandleDone}>
+        <TouchableOpacity
+          style={styles.doneContainer}
+          onPress={onHandleDone}
+        >
           <View>
             <Text style={{ color: "#1778F2" }}>Done</Text>
           </View>
@@ -177,7 +167,7 @@ export default EditProfile = ({ navigation }) => {
               secureTextEntry={true}
               placeholderTextColor="black"
               autoCapitalize="none"
-              value={confirmpassword}
+              value={confirmPassword}
               onChangeText={handleConfirmPasswordChange}
             />
           </View>
@@ -186,7 +176,9 @@ export default EditProfile = ({ navigation }) => {
             <Text style={styles.errorMsg}>{passwordError}</Text>
           )}
           {!isPasswordMatch && (
-            <Text style={styles.errorMsg}>Passwords do not match</Text>
+            <Text style={styles.errorMsg}>
+              Passwords do not match
+            </Text>
           )}
         </View>
         <View style={styles.line}></View>

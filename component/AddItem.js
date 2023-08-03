@@ -2,10 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   Alert,
   SafeAreaView,
-  ScrollView,
   View,
   Text,
-  Image,
   StyleSheet,
   StatusBar,
   TouchableOpacity,
@@ -64,7 +62,11 @@ const DropDown = ({ setCategory, categorys }) => {
               }}
             >
               <Text
-                style={{ fontWeight: "bold", color: "white", marginRight: 3 }}
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  marginRight: 3,
+                }}
               >
                 {category}
               </Text>
@@ -77,7 +79,8 @@ const DropDown = ({ setCategory, categorys }) => {
 };
 
 export default AddItem = ({ navigation }) => {
-  const { user, data, subscription, setSubscription } = useContext(UserContext);
+  const { user, data, subscription, setSubscription } =
+    useContext(UserContext);
 
   const [loading, setLoading] = useState(true);
 
@@ -156,7 +159,10 @@ export default AddItem = ({ navigation }) => {
       <Slider onViewableItemsChanged={handleViewableItemsChanged} />
       <View style={styles.inputitems}>
         <Text style={styles.subhead}>Category</Text>
-        <DropDown setCategory={setCategory} categorys={categoryData} />
+        <DropDown
+          setCategory={setCategory}
+          categorys={categoryData}
+        />
       </View>
       <View style={styles.inputitems}>
         <Text style={styles.subhead}>Description</Text>

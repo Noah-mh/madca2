@@ -1,6 +1,6 @@
-import React from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default SecondCustomButton = ({
   backgroundColor,
@@ -17,7 +17,8 @@ export default SecondCustomButton = ({
       style={[styles.button, { backgroundColor, marginBottom }]}
       onPress={() => {
         onPress();
-      }}>
+      }}
+    >
       <Ionicons name={icon} size={20} color={iconColor} />
       <Text style={[styles.buttonText, { color }]}>{text}</Text>
     </TouchableOpacity>
@@ -26,16 +27,16 @@ export default SecondCustomButton = ({
 
 const styles = StyleSheet.create({
   button: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderRadius: 20,
     padding: 10,
     borderWidth: 2,
-    alignItems: 'center',
-    justifyContent:'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: 280,
   },
   buttonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
   },
 });

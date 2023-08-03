@@ -7,34 +7,45 @@ import {
   StyleSheet,
   StatusBar,
 } from "react-native";
-
+import { signInUser } from "../firebase/firebaseOperation";
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";
 import { UserContext } from "./UserContext";
-import { firebaseapp } from "../firebase";
-
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export default SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useContext(UserContext);
 
-  const onHandleSignIn = () => {
+  // const onHandleSignIn = () => {
+  //   if (email === "" || password === "") {
+  //     alert("Email or password cannot be empty.");
+  //     return;
+  //   }
+
+  //   const auth = getAuth(firebaseapp);
+  //   signInWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       setUser(userCredential.user);
+  //       navigation.navigate("BottomBar");
+  //     })
+  //     .catch((error) => {
+  //       alert(error.message);
+  //     });
+  // };
+  const onHandleSignIn = async () => {
     if (email === "" || password === "") {
       alert("Email or password cannot be empty.");
       return;
     }
 
-    const auth = getAuth(firebaseapp);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        setUser(userCredential.user);
-        navigation.navigate("BottomBar");
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
+    try {
+      const userCredential = await signInUser(email, password);
+      setUser(userCredential.user);
+      navigation.navigate("BottomBar");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
