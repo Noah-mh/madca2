@@ -24,6 +24,7 @@ import { UserContext } from "./UserContext";
 import Loading from "./Loading";
 import getYearlyCalendar, {
   getMonthlyCalendar,
+  getDayOfWeek,
 } from "./YearlyCalendar";
 const { width } = Dimensions.get("screen");
 
@@ -144,7 +145,12 @@ export default Calendar = ({ navigation }) => {
     today.toLocaleString("default", { month: "long" })
   );
   const [dateList, setDateList] = useState([]);
-  const [activeDate, setActiveDate] = useState(today);
+  const [activeDate, setActiveDate] = useState({
+    date: today.getDate(),
+    dayOfWeek: getDayOfWeek(today),
+    month: today.toLocaleString("default", { month: "long" }),
+    year: today.getFullYear(),
+  });
   const [totalCost, setTotalCost] = useState(0);
   const [match, setMatch] = useState([]);
 
@@ -200,9 +206,7 @@ export default Calendar = ({ navigation }) => {
 
   const matchingSubscriptions = subscription.filter(
     (subscription) => {
-      return (
-        activeDate.date === subscription.timestamp.toDate().getDate()
-      );
+      return activeDate.date === subscription.timestamp.toDate().getDate();
     }
   );
   useEffect(() => {
@@ -281,7 +285,7 @@ export default Calendar = ({ navigation }) => {
               <TouchableOpacity
                 key={index}
                 onLayout={(event) => {
-                  if (date.date === activeDate.getDate()) {
+                  if (date.date === activeDate.date) {
                     scrollViewRef.current.scrollTo({
                       x:
                         event.nativeEvent.layout.x -
@@ -292,7 +296,7 @@ export default Calendar = ({ navigation }) => {
                 }}
                 style={[
                   styles.box,
-                  date.date === activeDate.getDate()
+                  date.date === activeDate.date
                     ? styles.activeDateBox
                     : null,
                 ]}
@@ -304,7 +308,7 @@ export default Calendar = ({ navigation }) => {
                 <Text
                   style={[
                     styles.day,
-                    date.date === activeDate.getDate()
+                    date.date === activeDate.date
                       ? styles.activeDay
                       : null,
                   ]}
@@ -312,7 +316,7 @@ export default Calendar = ({ navigation }) => {
                   {date.dayOfWeek}
                 </Text>
 
-                {date.date === activeDate.getDate() ? (
+                {date.date === activeDate.date ? (
                   <View style={styles.active}></View>
                 ) : null}
               </TouchableOpacity>
