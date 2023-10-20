@@ -1,13 +1,13 @@
 import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer } from "@react-navigation/native";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome,
-} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 import HomeScreenYourSub from "./home-yoursub";
 import HomeScreenUpcomingBill from "./home-upcomingbill";
@@ -70,10 +70,18 @@ const BottomBarNavigator = () => {
           if (route.name == "Add") {
             iconName = focused ? "add-circle" : "add-circle-outline";
             return (
-              { tabBarButtom: (props) => <CustomTabBarIcon {...props} /> },
+              {
+                tabBarButtom: (props) => (
+                  <CustomTabBarIcon {...props} />
+                ),
+              },
               (
                 <Text>
-                  <Ionicons name={iconName} size={"50"} color={"#B21818"} />
+                  <Ionicons
+                    name={iconName}
+                    size={"50"}
+                    color={"#B21818"}
+                  />
                 </Text>
               )
             );
@@ -104,7 +112,11 @@ const BottomBarNavigator = () => {
                 }}
               >
                 <Text>
-                  <Ionicons name={iconName} size={"32"} color={color} />
+                  <Ionicons
+                    name={iconName}
+                    size={"32"}
+                    color={color}
+                  />
                 </Text>
               </View>
             );

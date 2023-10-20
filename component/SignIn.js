@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -7,39 +7,44 @@ import {
   StyleSheet,
   StatusBar,
 } from "react-native";
-
+import { signInUser } from "../firebase/firebaseOperation";
 import AppLogo from "./AppLogo";
 import CustomButton from "./CustomButton";
 import { UserContext } from "./UserContext";
-import { firebaseapp } from "../firebase";
 
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-
-const auth = getAuth(firebaseapp);
-
-export default RegisterScreen2 = ({ navigation }) => {
+export default SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useContext(UserContext);
 
-  const onHandleSignIn = () => {
-    if (email != "" && password != "") {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const userinfo = userCredential.user;
-          // ...
-          setUser(userinfo);
-          navigation.navigate("BottomBar");
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          alert(errorMessage);
-        });
+  // const onHandleSignIn = () => {
+  //   if (email === "" || password === "") {
+  //     alert("Email or password cannot be empty.");
+  //     return;
+  //   }
+
+  //   const auth = getAuth(firebaseapp);
+  //   signInWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       setUser(userCredential.user);
+  //       navigation.navigate("BottomBar");
+  //     })
+  //     .catch((error) => {
+  //       alert(error.message);
+  //     });
+  // };
+  const onHandleSignIn = async () => {
+    if (email === "" || password === "") {
+      alert("Email or password cannot be empty.");
+      return;
+    }
+
+    try {
+      const userCredential = await signInUser(email, password);
+      setUser(userCredential.user);
+      navigation.navigate("BottomBar");
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -52,27 +57,30 @@ export default RegisterScreen2 = ({ navigation }) => {
           <TextInput
             style={styles.input}
             underlineColorAndroid="transparent"
-            placeholder={""}
             placeholderTextColor="black"
             autoCapitalize="none"
             value={email}
-            onChangeText={(text) => setEmail(text)}
-          ></TextInput>
+            onChangeText={setEmail}
+          />
         </View>
         <View style={styles.inputitems}>
           <Text style={styles.subhead}>Password</Text>
           <TextInput
             style={styles.input}
             underlineColorAndroid="transparent"
-            placeholder={""}
             secureTextEntry={true}
             placeholderTextColor="black"
             autoCapitalize="none"
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={setPassword}
           />
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
           <View style={{ flexDirection: "row", marginRight: 110 }}>
             <View style={styles.line} />
             <Text style={{ color: "#666680" }}>Remember me</Text>
@@ -87,8 +95,10 @@ export default RegisterScreen2 = ({ navigation }) => {
           backgroundColor="#B21818"
           marginBottom={25}
           onPress={onHandleSignIn}
-        ></CustomButton>
-        <Text style={{ color: "white", marginTop: 30, marginBottom: 40 }}>
+        />
+        <Text
+          style={{ color: "white", marginTop: 30, marginBottom: 40 }}
+        >
           You don't have an account yet?
         </Text>
         <CustomButton
@@ -97,7 +107,7 @@ export default RegisterScreen2 = ({ navigation }) => {
           backgroundColor="#666680"
           marginBottom={25}
           onPress={() => navigation.navigate("Register1")}
-        ></CustomButton>
+        />
       </View>
     </SafeAreaView>
   );

@@ -1,6 +1,6 @@
-const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+export const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-const getDayOfWeek = (date) => days[date.getDay()];
+export const getDayOfWeek = (date) => days[date.getDay()];
 
 const getMonthlyCalendar = (year, month) => {
   let calendar = [];
@@ -27,6 +27,4 @@ const getYearlyCalendar = (year) => {
   return calendar;
 };
 
-
-
-export {getYearlyCalendar as default, getMonthlyCalendar}
+export { getYearlyCalendar as default, getMonthlyCalendar };

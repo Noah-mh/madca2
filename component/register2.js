@@ -6,7 +6,6 @@ import {
   TextInput,
   StyleSheet,
   StatusBar,
-  AsyncStorage,
 } from "react-native";
 
 import AppLogo from "./AppLogo";
@@ -14,13 +13,12 @@ import CustomButton from "./CustomButton";
 import ProgressLine from "./progressLine";
 import validatePassword from "./validatePassword";
 import { UserContext } from "./UserContext";
-import { firebaseapp, db } from "../firebase";
-import { doc, setDoc } from "firebase/firestore";
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-
-} from "firebase/auth";
+  createUser,
+  setUserDocument,
+} from "../firebase/firebaseOperation";
+import { firebaseapp, db } from "../firebase";
+import { getAuth } from "firebase/auth";
 
 const auth = getAuth(firebaseapp);
 
@@ -44,28 +42,45 @@ export default RegisterScreen2 = ({ navigation }) => {
     }
   });
 
-  const onHandleSignUp = () => {
-    if (email != "" && password != "") {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const userinfo = userCredential.user;
-          // ...
-          setUser(userinfo);
-          setDoc(doc(db, "userData", userinfo.uid), {
-            username: username,
-            subscriptions: [],
-            budget: "500"
-          });
-          navigation.navigate("BottomBar");
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          alert(errorMessage);
-        });
+  // const onHandleSignUp = () => {
+  //   if (email != "" && password != "") {
+  //     createUserWithEmailAndPassword(auth, email, password)
+  //       .then((userCredential) => {
+  //         // Signed in
+  //         const userinfo = userCredential.user;
+  //         // ...
+  //         setUser(userinfo);
+  //         setDoc(doc(db, "userData", userinfo.uid), {
+  //           username: username,
+  //           subscriptions: [],
+  //           budget: "500",
+  //         });
+  //         navigation.navigate("BottomBar");
+  //       })
+  //       .catch((error) => {
+  //         const errorCode = error.code;
+  //         const errorMessage = error.message;
+  //         alert(errorMessage);
+  //       });
+  //   }
+  // };
+  const onHandleSignUp = async () => {
+    if (email !== "" && password !== "") {
+      try {
+        const userinfo = await createUser(
+          auth,
+          email,
+          password,
+          username
+        );
+        setUser(userinfo);
+        navigation.navigate("BottomBar");
+      } catch (error) {
+        alert(error.message);
+      }
     }
   };
+
   const calculatePasswordStrength = (password) => {
     // Minimum password length
     const MIN_LENGTH = 8;
@@ -185,7 +200,9 @@ export default RegisterScreen2 = ({ navigation }) => {
           marginBottom={25}
           onPress={onHandleSignUp}
         ></CustomButton>
-        <Text style={{ color: "white", marginTop: 30, marginBottom: 40 }}>
+        <Text
+          style={{ color: "white", marginTop: 30, marginBottom: 40 }}
+        >
           Do you have already an account?
         </Text>
         <CustomButton

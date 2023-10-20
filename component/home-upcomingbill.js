@@ -31,9 +31,12 @@ export default HomeUpcomingBill = ({ navigation }) => {
     if (!subscription) {
       return;
     }
-    const calculateTotal = subscription.reduce((total, subscription) => {
-      return total + parseFloat(subscription.cost);
-    }, 0);
+    const calculateTotal = subscription.reduce(
+      (total, subscription) => {
+        return total + parseFloat(subscription.cost);
+      },
+      0
+    );
     setTotalCost(calculateTotal.toFixed(2));
 
     const costs = subscription.map((item) => parseFloat(item.cost));
@@ -54,7 +57,14 @@ export default HomeUpcomingBill = ({ navigation }) => {
 
     setCostStrength(calculateCostStrength);
   }, [totalCost]);
-
+  const today = new Date();
+  const nextMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1
+  );
+  const month = nextMonth.toLocaleString("default", {
+    month: "short",
+  });
   return (
     <SafeAreaView style={styles.container}>
       {/* {loading ? (
@@ -163,7 +173,7 @@ export default HomeUpcomingBill = ({ navigation }) => {
                 return (
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate("Info");
+                      navigation.navigate("Info", { item: item });
                     }}
                   >
                     <View
@@ -177,19 +187,19 @@ export default HomeUpcomingBill = ({ navigation }) => {
                       ]}
                     >
                       <View style={styles.subscriptionDate}>
-                        <Text style={{ color: "#fff" }}>
-                          {item.timestamp.toDate().toLocaleString("default", {
-                            month: "short",
-                          })}
-                        </Text>
+                        <Text style={{ color: "#fff" }}>{month}</Text>
                         <Text style={styles.textInsideBox}>
-                          {String(item.timestamp.toDate().getDate()).padStart(2, "0")}
+                          {String(
+                            item.timestamp.toDate().getDate()
+                          ).padStart(2, "0")}
                         </Text>
                       </View>
                       <Text style={styles.subscriptionText1}>
                         {item.subName}
                       </Text>
-                      <Text style={styles.subscriptionText2}>${item.cost}</Text>
+                      <Text style={styles.subscriptionText2}>
+                        ${item.cost}
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 );

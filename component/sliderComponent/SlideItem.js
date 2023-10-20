@@ -8,8 +8,6 @@ import {
   Easing,
 } from "react-native";
 import React from "react";
-import Slides from "./data";
-import { FlatList } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("screen");
 

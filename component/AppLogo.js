@@ -12,8 +12,8 @@ export default function AppLogo() {
       }}>
       <Image
         style={styles.appLogo}
-        source={require('../assets/appLogo.png')}></Image>
-      <Text style={styles.appName}>MONEYWISE</Text>
+        source={require('../assets/appLogo.jpeg')}></Image>
+      <Text style={styles.appName}>SUBSTRACK</Text>
     </View>
   );
 }
