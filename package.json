@@ -11,7 +11,7 @@
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
-    "expo": "~47.0.12",
+    "expo": "~50.0.8",
     "firebase": "^9.16.0",
     "react": "18.1.0",
     "react-native": "0.70.8",
